@@ -18,6 +18,7 @@ return new class extends Migration
             $table->morphs('itemable'); 
             
             $table->integer('quantity');
+            $table->string('description')->nullable();
             $table->decimal('approved_quantity', 8, 2)->nullable(); 
             
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');

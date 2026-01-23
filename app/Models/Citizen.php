@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\SocialCase;
 use App\Models\Street;
+use App\Models\HealthProfile;
 
 class Citizen extends Model
 {
@@ -39,5 +40,9 @@ class Citizen extends Model
     public function cases()
     {
         return $this->hasMany(SocialCase::class);
+    }
+    public function healthProfile()
+    {
+        return $this->hasOne(HealthProfile::class);
     }
 }

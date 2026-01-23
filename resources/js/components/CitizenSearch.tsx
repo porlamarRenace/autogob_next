@@ -41,7 +41,10 @@ export default function CitizenSearch({ onCitizenFound, onReset, onNotFound }: P
                 setError(`El ciudadano ya tiene un caso activo: ${response.data.active_case.category.name}`);
             }
 
-            onCitizenFound(response.data.citizen);
+            onCitizenFound({
+                ...response.data.citizen,
+                history: response.data.history // <--- INYECTAMOS EL HISTORIAL QUE VIENE DE SEARCHAPI
+            });
 
         } catch (err: any) {
             // CASO 2: El backend devuelve 404 (Lo estándar)

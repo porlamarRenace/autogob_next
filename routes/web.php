@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\CitizenController;
+use App\Http\Controllers\CaseController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -23,6 +24,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/api/citizens', [CitizenController::class, 'store'])->name('citizens.store');
     
     Route::get('/cases/create', [CitizenController::class, 'index'])->name('cases.create');
+    Route::put('/api/citizens/{id}', [CitizenController::class, 'update'])->name('citizens.update');
+
+    Route::get('/api/cases/categories', [CaseController::class, 'getCategories'])->name('cases.categories');
+    Route::get('/api/cases/search-items', [CaseController::class, 'searchItems'])->name('cases.search-items');
+    Route::post('/api/cases', [CaseController::class, 'store'])->name('cases.store');
 });
 
 require __DIR__.'/settings.php';

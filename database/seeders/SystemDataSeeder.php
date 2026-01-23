@@ -103,9 +103,13 @@ class SystemDataSeeder extends Seeder
                 ]);
 
                 foreach ($catData['items'] as $item) {
+                    $this->info($item['descripcion']);
+                    $this->info($item['forma']);
+                    $this->info($item['unidad']);
+                    $this->info($item['concentracion']);
                     Supply::create([
                         'category_id' => $subCat->id,
-                        'name' => $item['descripcion'],
+                        'name' => $item['descripcion'] . ($item['forma'] ? ' ' . $item['forma'] : ''),
                         'unit' => $item['unidad'],
                         'concentration' => $item['concentracion'] ?? null,
                         'status' => 'active'
