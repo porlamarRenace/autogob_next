@@ -1,25 +1,26 @@
-# Usamos una imagen optimizada para Laravel con Nginx + PHP 8.2 ya configurados
 FROM serversideup/php:8.2-fpm-nginx
 
-# Variables de entorno para optimización
+# Habilitar Opcache
 ENV PHP_OPCACHE_ENABLE=1
-ENV WEBUSER_HOME="/var/www/html"
 
-# Pasamos a root para instalar dependencias del sistema
+# Instalar dependencias como root
 USER root
 
-# Instalamos Node.js (necesario para compilar tus assets con Vite)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Volvemos al usuario seguro de la imagen
-USER webuser
+# Copiar archivos con el usuario correcto (www-data)
+COPY --chown=www-data:www-data . /var/www/html
 
-# Copiamos el código del proyecto
-COPY --chown=webuser:webuser . /var/www/html
+# Cambiar al usuario www-data para instalar dependencias y construir
+USER www-data
 
-# Instalamos dependencias de PHP (Composer)
+# Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Instalamos dependencias de Frontend y compilamos (Vite)
+# Instalar dependencias de Node y compilar assets
 RUN npm install && npm run build
