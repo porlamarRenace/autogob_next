@@ -1,0 +1,458 @@
+{
+    "servicios": [
+        {
+            "id": 1,
+            "nombre": "Salud",
+            "subservicios": [
+                {
+                    "id": 1,
+                    "nombre": "Imagenología",
+                    "especialidades": [
+                       {
+                           "id": 1,
+                           "nombre": "Rayos X"
+                       },
+                       {
+                           "id": 2,
+                           "nombre": "Tomografía"
+                       },
+                       {
+                           "id": 3,
+                           "nombre": "Resonancia Magnética"
+                       },
+                       {
+                           "id": 4,
+                           "nombre": "Ecografía"
+                       },
+                       {
+                           "id": 5,
+                           "nombre": "Mamografía"
+                       }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "nombre": "Cardiología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Electrocardiograma"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Ecocardiograma"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Prueba de Esfuerzo"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "nombre": "Neurología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Electroencefalograma"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Tomografía Computarizada"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Resonancia Magnética"
+                        }
+                    ]
+                },
+                {
+                    "id": 4,
+                    "nombre": "Pediatría",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Pediatría General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Neonatología"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Pediatría del Comportamiento"
+                        }
+                    ]
+                },
+                {
+                    "id": 5,
+                    "nombre": "Ginecología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Ginecología General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Obstetricia"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Ginecología Oncológica"
+                        }
+                    ]
+                },
+                {
+                    "id": 6,
+                    "nombre": "Odontología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Odontología General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Ortodoncia"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Endodoncia"
+                        }
+                    ]
+                },
+                {
+                    "id": 7,
+                    "nombre": "Laboratorio Clínico",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Hematología"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Bioquímica"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Microbiología"
+                        }
+                    ]
+                },
+                {
+                    "id": 8,
+                    "nombre": "Urgencias"
+                },
+                {
+                    "id": 9,
+                    "nombre": "Farmacia"
+                },
+                {
+                    "id": 10,
+                    "nombre": "Hospitalización",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Cuidados Intensivos"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Pediatría"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Maternidad"
+                        }
+                    ]
+                },
+                {
+                    "id": 11,
+                    "nombre": "Medicina Interna"
+                },
+                {
+                    "id": 12,
+                    "nombre": "Traumatología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Traumatología General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Ortopedia"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Cirugía de Mano"
+                        }
+                    ]
+                },{
+                    "id": 13,
+                    "nombre": "Pediatría",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Pediatría General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Neonatología"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Pediatría Oncológica"
+                        }
+                    ]
+                },
+                {
+                    "id": 14,
+                    "nombre": "Ginecología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Ginecología General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Obstetricia"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Ginecología Oncológica"
+                        }
+                    ]
+                },
+                {
+                    "id": 15,
+                    "nombre": "Oftalmología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Oftalmología General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Cirugía Refractiva"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Retina"
+                        }
+                    ]
+                },
+                {
+                    "id": 16,
+                    "nombre": "Neumología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Neumología General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Neumología Pediátrica"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Neumología Oncológica"
+                        }
+                    ]
+                },
+                {
+                    "id": 17,
+                    "nombre": "Oncología",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Oncología General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Oncología Pediátrica"
+                        }
+                    ]
+                }
+
+            ]
+        },
+        {
+            "id": 2,
+            "nombre": "Educación",
+            "subservicios": [
+                {
+                    "id": 1,
+                    "nombre": "Educación Inicial",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Educación Inicial General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Educación Inicial Especial"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "nombre": "Primaria",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Primaria General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Primaria Especial"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "nombre": "Secundaria",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Secundaria General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Secundaria Especial"
+                        }
+                    ]
+                },
+                {
+                    "id": 4,
+                    "nombre": "Universidad",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Ciencias Sociales"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Ciencias Aplicadas"
+                        },
+                        {
+                            "id": 3,
+                            "nombre": "Ciencias de la Salud"
+                        },
+                        {
+                            "id": 4,
+                            "nombre": "Humanidades"
+                        },
+                        {
+                            "id": 5,
+                            "nombre": "Artes"
+                        },
+                        {
+                            "id": 6,
+                            "nombre": "Politecnia"
+                        }
+                    ]
+                },
+                {
+                    "id": 5,
+                    "nombre": "Educación Técnica",
+                    "especialidades": [
+                        {
+                            "id": 1,
+                            "nombre": "Educación Técnica General"
+                        },
+                        {
+                            "id": 2,
+                            "nombre": "Educación Técnica Especial"
+                        }
+                    ]
+                },
+                {
+                    "id": 6,
+                    "nombre": "Educación para Adultos"
+                },
+                {
+                    "id": 7,
+                    "nombre": "Educación Deportiva"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "nombre": "Transporte",
+            "subservicios": [
+                {
+                    "id": 1,
+                    "nombre": "Autobús"
+                },
+                {
+                    "id": 2,
+                    "nombre": "Metro"
+                },
+                {
+                    "id": 3,
+                    "nombre": "Taxi"
+                },
+                {
+                    "id": 4,
+                    "nombre": "Van"
+                },
+                {
+                    "id": 5,
+                    "nombre": "Transporte Escolar"
+                },
+                {
+                    "id": 6,
+                    "nombre": "Transporte de Carga"
+                }
+
+            ]
+        },
+        {
+            "id": 4,
+            "nombre": "Seguridad",
+            "subservicios": [
+                {
+                    "id": 1,
+                    "nombre": "Policía"
+                },
+                {
+                    "id": 2,
+                    "nombre": "Bomberos"
+                },
+                {
+                    "id": 3,
+                    "nombre": "Protección Civil"
+                },
+                {
+                    "id": 4,
+                    "nombre": "Vigilancia Privada"
+                },
+                {
+                    "id": 5,
+                    "nombre": "Fuerzas Armadas"
+                }
+
+            ]
+        },
+        {
+            "id": 5,
+            "nombre": "Cultura",
+            "subservicios": [
+                {
+                    "id": 1,
+                    "nombre": "Museo"
+                },
+                {
+                    "id": 2,
+                    "nombre": "Teatro"
+                },
+                {
+                    "id": 3,
+                    "nombre": "Biblioteca"
+                },
+                {
+                    "id": 4,
+                    "nombre": "Centro Cultural"
+                }
+            ]
+        }
+    ]
+}

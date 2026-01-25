@@ -1,0 +1,663 @@
+{
+   "tipo_beneficiario": [
+       {"id":1, "tipo": "Persona Natural" },
+       {"id":2, "tipo": "Persona Jurídica" },
+       {"id":3, "tipo": "Comunidad" },
+       {"id":4, "tipo": "Organización No Gubernamental" }
+   ],
+   "categoria_beneficiario": [
+       {"id":1, "tipo": "Vulnerable" },
+       {"id":2, "tipo": "No Vulnerable" },
+       {"id":3, "tipo": "Mixto" }
+   ],
+   "tipo_beneficio": [
+       {"id":1, "tipo": "Monetario" },
+       {"id":2, "tipo": "No Monetario" }
+   ],
+   "genero_beneficiario": [
+       {"id":1,"value":"M" ,"tipo": "Masculino" },
+       {"id":2,"value":"F" ,"tipo": "Femenino" }
+   ],
+   "sexo": [
+       {"id":1,"value":"M" ,"tipo": "Masculino" },
+       {"id":2,"value":"F" ,"tipo": "Femenino" }
+   ],
+   "edad_beneficiario": [
+       {"id":1, "tipo": "Menor de edad" },
+       {"id":2, "tipo": "Adulto" },
+       {"id":3, "tipo": "Adulto Mayor" }
+   ],
+   "st_familiar": [
+       {"id":1,"value":"1", "tipo": "Jefe de Familia" },
+       {"id":2,"value":"2", "tipo": "Carga Familiar" }
+   ],
+   "rol_familiar": [
+       {"id":1,"value":"1", "tipo": "Padre" },
+       {"id":2,"value":"2", "tipo": "Madre" },
+       {"id":3,"value":"3", "tipo": "Hijo" },
+       {"id":4,"value":"4", "tipo": "Hermano" },
+       {"id":5,"value":"5", "tipo": "Abuelo" },
+       {"id":6,"value":"6", "tipo": "Abuela" },
+       {"id":7,"value":"7", "tipo": "Otro" }
+   ],
+   "discapacidad_tipo": [
+       {"id":1,"value":"FISICA", "tipo": "Física" },
+       {"id":2,"value":"INTELECTUAL", "tipo": "Intelectual" },
+       {"id":3,"value":"VISUAL", "tipo": "Visual" },
+       {"id":4,"value":"AUDITIVA", "tipo": "Auditiva" },
+       {"id":5,"value":"PSICOSOCIAL", "tipo": "Psicosocial" },
+       {"id":6,"value":"SENSORIAL", "tipo": "Sensorial" },
+       {"id":7,"value":"MULTIPLE", "tipo": "Múltiple" },
+       {"id":8,"value":"NO-APLICA", "tipo": "No Aplica" }
+   ],
+   "discapacidad_grado": [
+       {"id":1,"value":"LEVE", "tipo": "Leve" },
+       {"id":2,"value":"MODERADA", "tipo": "Moderada" },
+       {"id":3,"value":"SEVERA", "tipo": "Severa" },
+       {"id":4,"value":"PROFUNDA", "tipo": "Profunda" },
+       {"id":5,"value":"NO-APLICA", "tipo": "No Aplica" }
+    ],
+    "grado_instruccion": [
+       {"id":1, "value":"NO",   "tipo": "Sin instrucción" },
+       {"id":2, "value":"BASICA", "tipo": "Educación Primaria" },
+       {"id":4, "value":"MEDIA", "tipo": "Educación Secundaria" },
+       {"id":6, "value":"TECNICO-UNIV", "tipo": "Educación Técnica" },
+       {"id":7, "value":"PREGRADO", "tipo": "Educación Universitaria" },
+       {"id":9, "value":"POSTGRADO", "tipo": "Postgrado" }
+    ],
+   "tipo_documento": [
+       {"id":1, "tipo": "Cédula de Identidad" },
+       {"id":2, "tipo": "Pasaporte" },
+       {"id":3, "tipo": "RIF" },
+       {"id":4, "tipo": "Carnet de Circulación" },
+       {"id":5, "tipo": "Declaración Jurada de no poseer vivienda" },
+       {"id":6, "tipo": "Carta de Residencia" },
+       {"id":7, "tipo": "Pasaporte" },
+       {"id":8, "tipo": "Acta de nacimiento" },
+       {"id":9, "tipo": "Constancia de Estudio" },
+       {"id":10, "tipo": "Referencia Médica" },
+       {"id":11, "tipo": "Historial Clínico" },
+       {"id":12, "tipo": "Receta Médica" },
+       {"id":13, "tipo": "Informe Médico" },
+       {"id":14, "tipo": "Presupuesto de Obras" },
+       {"id":15, "tipo": "Presupuesto de Materiales" },
+       {"id":16, "tipo": "Comprobante de Ingresos" },
+       {"id":17, "tipo": "Declaración de la Impuestos" },
+       {"id":18, "tipo": "Solvencia de Catastro" },
+       {"id":19, "tipo": "Acta de Matrimonio" },
+       {"id":20, "tipo": "Constancia de Trabajo" },
+       {"id":21, "tipo": "Carta de concubinato" },
+       {"id":22, "tipo": "Referencia Personal" },
+       {"id":23, "tipo": "Pasajes aéreo, marítimo y terrestre" },
+       {"id":24, "tipo": "Record académico" },
+       {"id":25, "tipo": "FE DE VIDA" },
+       {"id":26, "tipo": "Carnet de discapacidad" },
+       {"id":27, "tipo": "Poder" },
+       {"id":28, "tipo": "Recibo de pago" }
+   ],
+   "formatos_documento": [
+        {"id":1, "tipo": "PDF" },
+        {"id":2, "tipo": "JPG" },
+        {"id":3, "tipo": "PNG" },
+        {"id":4, "tipo": "DOCX" },
+        {"id":5, "tipo": "XLSX" },
+        {"id":6, "tipo": "TXT" },
+        {"id":7, "tipo": "GIF" },
+        {"id":8, "tipo": "BMP" },
+        {"id":9, "tipo": "WEBP" },
+        {"id":10, "tipo": "MP3" },
+        {"id":11, "tipo": "MP4" },
+        {"id":12, "tipo": "AVI" }
+   ],
+   "tipo_ayuda": [
+       {"id":1, "tipo": "Subvención" },
+       {"id":2, "tipo": "Donación" },
+       {"id":3, "tipo": "Crédito" },
+       {"id":4, "tipo": "Asistencia Técnica" },
+       {"id":5, "tipo": "Capacitación" },
+       {"id":6, "tipo": "Asesoría" }
+   ],
+   "canal_recepcion_solicitud": [
+        {"id":1, "tipo": "Atención al Ciudadano" },
+        {"id":2, "tipo": "1x10 Buen Gobierno" },
+        {"id":3, "tipo": "Sala de Autogobierno" },
+        {"id":4, "tipo": "Despacho" },
+        {"id":5, "tipo": "Fundación Santiago Mariño" }
+   ],
+   "categorias": [
+       {
+           "id": 1,
+           "nombre": "Salud",
+           "descripcion": "Asistencia médica y servicios relacionados",
+           "status": "active",
+           "requisitos": { "descripcion":"Contar con diagnóstico médico que justifique la necesidad de la ayuda. Presentar documentos de identidad del solicitante y beneficiario. Cumplir con los criterios de elegibilidad establecidos por la institución.",
+                "documentos":[
+                    {"id":"1", "nombre":"Diagnóstico médico"},
+                    {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                    {"id":"3", "nombre":"Comprobante de residencia"}
+                ]
+           },
+           "subcategorias": [
+              {
+                   "id": 1,
+                   "nombre": "Atención Médica",
+                   "descripcion": "Servicios de consulta y tratamiento médico",
+                   "status": "active",
+                   "documentos": [
+                        {"id":"1", "nombre":"Referencia médica"},
+                        {"id":"2", "nombre":"Historial clínico"}
+                    ], 
+                    "servicios": [
+                        { "id": "1", "descripcion": "Cardiología" },
+                        { "id": "2", "descripcion": "Neurología" },
+                        { "id": "3", "descripcion": "Pediatría" },
+                        { "id": "4", "descripcion": "Ginecología y Obstetricia" },
+                        { "id": "5", "descripcion": "Dermatología" },
+                        { "id": "6", "descripcion": "Psiquiatría" },
+                        { "id": "7", "descripcion": "Endocrinología" },
+                        { "id": "8", "descripcion": "Oncología" },
+                        { "id": "9", "descripcion": "Gastroenterología" },
+                        { "id": "10", "descripcion": "Nefrología" },
+                        { "id": "11", "descripcion": "Reumatología" },
+                        { "id": "12", "descripcion": "Hematología" },
+                        { "id": "13", "descripcion": "Infectología" },
+                        { "id": "14", "descripcion": "Otros" }
+                    ]
+              },
+              {
+                   "id": 2,
+                   "nombre": "Medicamentos",
+                   "descripcion": "Suministro de medicamentos esenciales",
+                   "status": "active",
+                   "documentos": [
+                    {"id":"1", "nombre":"Receta médica"},
+                    {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                    {"id":"3", "nombre":"Comprobante de residencia"}
+                           ]
+              },
+              {
+                   "id": 3,
+                   "nombre": "Equipos o insumos Médicos",
+                   "descripcion": "Provisión de equipos y dispositivos médicos",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Orden de compra"},
+                       {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"3", "nombre":"Comprobante de residencia"}
+                           ]
+              },
+              {
+                   "id": 4,
+                   "nombre": "Exámenes Médicos",
+                   "descripcion": "Servicios de diagnóstico y pruebas médicas",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Orden médica"},
+                       {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"3", "nombre":"Comprobante de residencia"}
+                           ], 
+                    "tipo_servicio": [
+                         { "id":"1", "descripcion": "Análisis de Sangre" },
+                        { "id": "2", "descripcion": "Rayos X" },
+                        { "id": "3", "descripcion": "Resonancia Magnética" },
+                        { "id": "4", "descripcion": "Tomografía Computarizada" },
+                        { "id": "5", "descripcion": "Ultrasonido" },
+                        { "id": "6", "descripcion": "Electrocardiograma" },
+                        { "id": "7", "descripcion": "Pruebas de Función Pulmonar" },
+                        { "id": "8", "descripcion": "Endoscopía" },
+                        { "id": "9", "descripcion": "Biopsia" },
+                        { "id": "10", "descripcion": "Hematología" },
+                        { "id": "11", "descripcion": "Bioquímica Clínica" },
+                        { "id": "12", "descripcion": "Microbiología" },
+                        { "id": "13", "descripcion": "Inmunología" },
+                        { "id": "14", "descripcion": "Parasitología" },
+                        { "id": "15", "descripcion": "Serología" },
+                        { "id": "16", "descripcion": "Uroanálisis" },
+                        { "id": "17", "descripcion": "Otros" }
+                        
+                    ]
+              },
+              {
+                   "id": 5,
+                   "nombre": "Atención Especializada",
+                   "descripcion": "Servicios médicos especializados y tratamientos avanzados",
+                   "status": "disabled",
+                   "documentos": [
+                       {"id":"1", "nombre":"Referencia médica"},
+                       {"id":"2", "nombre":"Historial clínico"}
+                   ]
+
+              },
+                {
+                     "id": 6,
+                     "nombre": "Salud Mental",
+                     "descripcion": "Apoyo y servicios relacionados con la salud mental",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Informe psicológico"},
+                         {"id":"2", "nombre":"Cédula de identidad del solicitante"}
+                     ]
+
+                },
+                {
+                     "id": 7,
+                     "nombre": "Rehabilitación",
+                     "descripcion": "Servicios de rehabilitación física y terapias",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Informe de rehabilitación"},
+                         {"id":"2", "nombre":"Cédula de identidad del solicitante"}
+                     ]
+
+                },
+                {
+                     "id": 8,
+                     "nombre": "Urgencias Médicas",
+                     "descripcion": "Atención inmediata para emergencias de salud",
+                     "status": "disabled",
+                     "documentos": [
+                         {"id":"1", "nombre":"Informe médico"},
+                         {"id":"2", "nombre":"Cédula de identidad del solicitante"}
+                     ]
+
+                },
+                {
+                     "id": 9,
+                     "nombre": "Vacunación",
+                     "descripcion": "Programas de inmunización y vacunación",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Registro de vacunación"},
+                         {"id":"2", "nombre":"Cédula de identidad del solicitante"}
+                     ]
+                },
+                {
+                     "id": 10,
+                     "nombre": "Intervenciones",
+                     "descripcion": "Intervenciones médicas y quirúrgicas",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Consentimiento informado"},
+                         {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"3", "nombre":"Comprobante de residencia"}
+                     ],
+                    "tipo_servicio":[
+                        { "id": "1", "descripcion": "Cirugía General" },
+                        { "id": "2", "descripcion": "Cirugía Cardiovascular" },
+                        { "id": "3", "descripcion": "Cirugía Ortopédica" },
+                        { "id": "4", "descripcion": "Cirugía Plástica" },
+                        { "id": "5", "descripcion": "Neurocirugía" },
+                        { "id": "6", "descripcion": "Cirugía Pediátrica" },
+                        { "id": "7", "descripcion": "Cirugía Laparoscópica" },
+                        { "id": "8", "descripcion": "Otros" }
+                    ]         
+                },
+                {
+                     "id": 11,
+                     "nombre": "Ambulancias",
+                     "descripcion": "Servicios de transporte de emergencia médica",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Orden de servicio"},
+                         {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"3", "nombre":"Comprobante de residencia"}
+                     ]
+                },
+                {
+                     "id": 12,
+                     "nombre": "Ambulancia Aérea",
+                     "descripcion": "Servicios de transporte aéreo para emergencias médicas",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Orden de servicio"},
+                         {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"3", "nombre":"Comprobante de residencia"}
+                     ]
+                }
+           ]
+       },
+       {
+           "id": 2,
+           "nombre": "Vivienda",
+           "descripcion": "Ayuda para adquisición, dotación y mejoras de viviendas",
+           "status": "active",
+           "documentos": [
+               {"id":"1", "nombre":"Informe de vivienda"},
+               {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+               {"id":"3", "nombre":"Comprobante de residencia"},
+               {"id":"4", "nombre":"Carta de solicitud"},
+               {"id":"5", "nombre":"Declaración jurada de no poseer vivienda"}
+           ],
+           "subcategorias": [
+                {
+                     "id": 1,
+                     "nombre": "Adquisición de Vivienda",
+                     "descripcion": "Asistencia para la compra de viviendas",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"2", "nombre":"Comprobante de ingresos"}
+                     ]
+                },
+                {
+                     "id": 2,
+                     "nombre": "Mejoras de Vivienda",
+                     "descripcion": "Apoyo para reparaciones y mejoras en viviendas existentes",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Presupuesto de obras"},
+                         {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"3", "nombre":"Comprobante de residencia"}
+                     ]
+                },
+                {
+                     "id": 3,
+                     "nombre": "Dotación de Vivienda",
+                     "descripcion": "Suministro de muebles y enseres para viviendas",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"2", "nombre":"Comprobante de residencia"}
+                     ]
+                },
+                { 
+                     "id": 4,
+                     "nombre": "Suministro de Materiales",
+                     "descripcion": "Asistencia para el suministro de materiales de construcción",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"2", "nombre":"Comprobante de residencia"}
+                         ]
+                }
+           ]
+       },
+       {
+           "id": 3,
+           "nombre": "Educación",
+           "descripcion": "Apoyo para la educación y la formación",
+           "status": "active",            
+           "subcategorias": [
+                {
+                   "id": 1,
+                   "nombre": "Becas",
+                   "descripcion": "Apoyo financiero para estudiantes",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de ingresos"}
+                   ]
+                },
+                {
+                   "id": 2,
+                   "nombre": "Capacitación",
+                   "descripcion": "Programas de formación y desarrollo profesional",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                           ]
+                },
+                {
+                     "id": 3,
+                     "nombre": "Materiales Educativos",
+                     "descripcion": "Suministro de libros y materiales escolares",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"2", "nombre":"Comprobante de residencia"}
+                     ]
+                },
+                {
+                     "id": 4,
+                     "nombre": "Infraestructura Educativa",
+                     "descripcion": "Mejoras y mantenimiento de instalaciones educativas",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"2", "nombre":"Comprobante de residencia"}
+                     ]
+                },
+                {
+                     "id": 5,
+                     "nombre": "Tecnología Educativa",
+                     "descripcion": "Provisión de equipos tecnológicos para el aprendizaje",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"2", "nombre":"Comprobante de residencia"}
+                     ]
+                },
+                {
+                     "id": 6,
+                     "nombre": "Uniformes Escolares",
+                     "descripcion": "Iniciativas para apoyar a estudiantes en situación vulnerable",
+                     "status": "active",
+                     "documentos": [
+                         {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                         {"id":"2", "nombre":"Comprobante de residencia"}
+                     ]
+                }
+
+           ]
+       },
+       {
+           "id": 4,
+           "nombre": "Alimentación",
+           "descripcion": "Suministro de alimentos y apoyo nutricional",
+           "status": "active",
+           "subcategorias": [
+                {
+                   "id": 1,
+                   "nombre": "Distribución de Alimentos",
+                   "descripcion": "Programas para la entrega de alimentos a comunidades necesitadas",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+                },
+                {
+                   "id": 2,
+                   "nombre": "Comedores Comunitarios",
+                   "descripcion": "Iniciativas para establecer y mantener comedores comunitarios",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                           ]
+                },
+                {
+                   "id": 3,
+                   "nombre": "Asistencia Nutricional",
+                   "descripcion": "Programas de apoyo nutricional para grupos vulnerables",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+                },
+                {
+                   "id": 4,
+                   "nombre": "Refrigerios",
+                   "descripcion": "Programas para proporcionar refrigerios",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+                },
+                {
+                   "id": 5,
+                   "nombre": "Almuerzos",
+                   "descripcion": "Programas para proporcionar almuerzos",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+                }
+
+            ]
+       },
+       {
+           "id": 5,
+           "nombre": "Empleo",
+           "descripcion": "Programas de capacitación y generación de empleo fijo o temporal",
+           "status": "disabled",
+           "subcategorias": [
+               {
+                   "id": 1,
+                   "nombre": "Capacitación Laboral",
+                   "descripcion": "Programas de formación para el empleo",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+               },
+               {
+                   "id": 2,
+                   "nombre": "Intermediación Laboral",
+                   "descripcion": "Servicios de búsqueda y colocación de empleo",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+               },
+               {
+                   "id": 3,
+                   "nombre": "Empleo Temporal",
+                   "descripcion": "Oportunidades de trabajo temporal",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+               },
+               {
+                   "id": 4,
+                   "nombre": "Empleo Fijo",
+                   "descripcion": "Oportunidades de trabajo permanente",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+               }
+           ]
+       },
+       {
+           "id": 6,
+           "nombre": "Transporte",
+           "descripcion": "Asistencia para transporte y movilidad",
+           "status": "active",
+           "subcategorias": [
+              {
+                   "id": 1,
+                   "nombre": "Transporte Público",
+                   "descripcion": "Subsidios y apoyo para el uso del transporte público",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+              },
+              {
+                   "id": 2,
+                   "nombre": "Transporte Privado",
+                   "descripcion": "Asistencia para transporte privado y servicios de taxi",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Comprobante de residencia"}
+                   ]
+              },
+              {
+                   "id": 3,
+                   "nombre": "Combustible",
+                   "descripcion": "Subsidios para la compra de combustible",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"2", "nombre":"Carnet de vehículo"},
+                       {"id":"3", "nombre":"Comprobante de residencia"}
+                   ]
+              }
+           ]
+       },
+    {
+           "id": 7,
+           "nombre": "Servicios Sociales",
+           "descripcion": "Apoyo en servicios sociales y comunitarios",
+           "status": "active",
+           "subcategorias": [
+               {
+                   "id": 1,
+                   "nombre": "Asesoría Legal",
+                   "descripcion": "Servicios de orientación y apoyo legal",
+                   "status": "active"
+               },
+               {
+                   "id": 2,
+                   "nombre": "Atención Psicológica",
+                   "descripcion": "Servicios de apoyo psicológico y emocional",
+                   "status": "active",
+                   "documentos": [
+                       {"id":"1", "nombre":"Informe médico"},
+                       {"id":"2", "nombre":"Cédula de identidad del solicitante"},
+                       {"id":"3", "nombre":"Comprobante de residencia"}
+                   ]
+               },
+               {
+                   "id": 3,
+                   "nombre": "Programas de Inclusión",
+                   "descripcion": "Iniciativas para promover la inclusión social",
+                   "status": "active"
+               }
+           ]
+       },
+       {
+           "id": 16,
+           "nombre": "Infraestructura comunal",
+           "descripcion": "Mejoras y mantenimiento de infraestructuras públicas comunales",
+           "status": "active",
+           "documentos": [
+               {"id":"1", "nombre":"Cédula de identidad del solicitante"},
+               {"id":"2", "nombre":"Comprobante de residencia"},
+               {"id":"3", "nombre":"Acta de asamblea comunitaria"},
+               {"id":"4", "nombre":"Presupuesto de obras"}
+           ],
+           "subcategorias": [
+               {
+                   "id": 1,
+                   "nombre": "Construcción",
+                   "descripcion": "Proyectos de construcción de infraestructura",
+                   "status": "active"
+               },
+               {
+                   "id": 2,
+                   "nombre": "Mantenimiento",
+                   "descripcion": "Programas de mantenimiento de infraestructuras existentes",
+                   "status": "active"
+               },
+               {
+                   "id": 3,
+                   "nombre": "Mejoramiento Urbano",
+                   "descripcion": "Iniciativas para mejorar el entorno urbano",
+                   "status": "active"
+               },
+               {
+                   "id": 4,
+                   "nombre": "Espacios Públicos",
+                   "descripcion": "Desarrollo y mantenimiento de parques y áreas recreativas",
+                   "status": "active"
+               }
+
+            ]
+       }
+   ]
+
+}
+
