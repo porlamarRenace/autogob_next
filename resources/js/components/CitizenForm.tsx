@@ -301,7 +301,7 @@ export default function CitizenForm({
                             </div>
 
                             {/* Sección: Discapacidad */}
-                            <div className={`p-4 border rounded-md transition-colors ${data.is_disabled ? 'bg-orange-50 border-orange-200' : 'bg-slate-50 dark:bg-neutral-800'}`}>
+                            <div className={`p-4 border rounded-md transition-colors ${data.is_disabled ? 'bg-orange-50 border-orange-200 dark:bg-neutral-800' : 'bg-slate-50 dark:bg-neutral-800'}`}>
                                 <div className="flex items-center space-x-2 mb-2">
                                     <Switch id="discapacidad" checked={data.is_disabled} onCheckedChange={(c) => setData('is_disabled', c)} />
                                     <Label htmlFor="discapacidad" className="font-bold cursor-pointer text-base">¿Posee alguna discapacidad?</Label>
