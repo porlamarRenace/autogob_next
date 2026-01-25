@@ -41,6 +41,7 @@ class PrincipalSeeder extends Seeder
                     'category_id' => $subCat->id,
                     'name' => $item['descripcion'],
                     'unit' => $item['unidad'],
+                    'concentration' => $item['concentracion'] ?? null,
                     'status' => 'active'
                 ]);
             }

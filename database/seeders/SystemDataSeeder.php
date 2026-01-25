@@ -93,20 +93,13 @@ class SystemDataSeeder extends Seeder
         if (!$salud) {
             $salud = Category::create(['name' => 'Salud']);
         }
-
         if (isset($data['categories'])) {
             foreach ($data['categories'] as $catData) {
-                // Crear la categoría del insumo (Ej: Materiales quirúrgicos) como hija de Salud
                 $subCat = Category::firstOrCreate([
                     'name' => $catData['name'],
                     'parent_id' => $salud->id
                 ]);
-
                 foreach ($catData['items'] as $item) {
-                    $this->info($item['descripcion']);
-                    $this->info($item['forma']);
-                    $this->info($item['unidad']);
-                    $this->info($item['concentracion']);
                     Supply::create([
                         'category_id' => $subCat->id,
                         'name' => $item['descripcion'] . ($item['forma'] ? ' ' . $item['forma'] : ''),

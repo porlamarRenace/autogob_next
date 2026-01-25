@@ -10,9 +10,13 @@ use App\Models\Citizen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
+use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CaseController extends Controller
 {
+    use AuthorizesRequests;
     // Obtener árbol de categorías para el select
     public function getCategories()
     {
@@ -126,6 +130,7 @@ class CaseController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
         ]);
         $activeCase = SocialCase::where('citizen_id', $request->citizen_id)
+        ->where('category_id', $request->category_id)
         ->whereIn('status', ['open', 'in_progress'])
         ->first();
 
@@ -163,5 +168,132 @@ class CaseController extends Controller
 
             return response()->json(['message' => 'Caso creado exitosamente', 'case' => $socialCase]);
         });
+    }
+    public function show($id)
+    {
+        if (!auth()->user()->can('view cases')) {
+            abort(403, 'No tiene permiso para ver casos.');
+        }
+        $case = SocialCase::with([
+            'citizen.street.community.municipality',    
+            'items.itemable', 
+            'creator',        
+            'category',
+            'subcategory',
+            'assignee'
+        ])->findOrFail($id);
+
+        $specialists = User::permission('review cases')
+            ->where('id', '!=', auth()->id()) // Opcional: excluirse a sí mismo
+            ->get(['id', 'name', 'email']);
+        switch ($case->status) {
+            case 'open':
+                $case->status = 'Abierto';
+                break;
+            case 'in_progress':
+                $case->status = 'En_progreso';
+                break;
+            case 'in_review':
+                $case->status = 'En_revision';
+                break;
+        }
+        return Inertia::render('cases/review', [
+            'socialCase' => $case,
+            'specialists' => $specialists,
+            'can'=>[
+                'assign' => auth()->user()->can('assign cases'),
+                'review' => auth()->user()->can('review cases'),
+            ]
+        ]);
+    }
+    public function assign(Request $request, $id)
+    {
+        if (!auth()->user()->can('assign cases')) {
+            abort(403, 'No tiene permiso para asignar casos.');
+        }
+
+        $case = SocialCase::findOrFail($id);
+
+        $request->validate([
+            'assigned_to' => 'required|exists:users,id',
+            'note' => 'nullable|string'
+        ]);
+
+        $case->update([
+            'assigned_to' => $request->assigned_to,
+            'status' => 'in_progress'
+        ]);
+        
+        return back()->with('message', 'Caso asignado correctamente.');
+    }
+    public function review(Request $request, $id)
+    {
+        if (!auth()->user()->can('review cases')) {
+            abort(403, 'No tiene permiso para aprobar/rechazar.');
+        }
+
+        $case = SocialCase::findOrFail($id);
+
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:case_items,id',
+            'items.*.status' => 'required|in:approved,rejected',
+            'items.*.approved_quantity' => 'nullable|numeric|min:0',
+            'items.*.review_note' => 'nullable|string',
+            'general_status' => 'required|in:approved,rejected,closed' 
+        ]);
+
+        return DB::transaction(function () use ($request, $case) {
+            
+            foreach ($request->items as $itemData) {
+                $case->items()->where('id', $itemData['id'])->update([
+                    'status' => $itemData['status'],
+                    'approved_quantity' => $itemData['status'] === 'rejected' ? 0 : $itemData['approved_quantity'],
+                    'review_note' => $itemData['review_note'],
+                    'reviewed_by' => auth()->id(),
+                ]);
+            }
+
+            $case->update([
+                'status' => $request->general_status, 
+            ]);
+
+            return response()->json(['message' => 'Revisión procesada exitosamente.']);
+        });
+    }
+    public function index(Request $request)
+    {
+        if (!auth()->user()->can('view cases')) {
+            abort(403, 'No tiene permiso para ver casos.');
+        }
+        $query = SocialCase::query()
+            ->with(['citizen', 'category', 'creator']) 
+            ->latest(); 
+
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('case_number', 'ILIKE', "%{$search}%")
+                ->orWhereHas('citizen', function($c) use ($search) {
+                    $c->where('first_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('last_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('identification_value', 'ILIKE', "%{$search}%");
+                });
+            });
+        }
+
+        if ($status = $request->input('status')) {
+            if ($status === 'pending_all') {
+                $query->whereIn('status', ['open', 'in_progress']);
+            } else {
+                $query->where('status', $status);
+            }
+        }
+
+        $cases = $query->paginate(10)->withQueryString();
+
+        return Inertia::render('cases/index', [
+            'cases' => $cases,
+            'filters' => $request->only(['search', 'status'])
+        ]);
     }
 }

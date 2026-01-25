@@ -5,17 +5,83 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\CitizenController;
 use App\Http\Controllers\CaseController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SupplyController;
+use App\Http\Controllers\Admin\MedicalServiceController;
+use App\Models\SocialCase;
+use App\Models\Citizen;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return redirect('/dashboard');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
+        $isManager = $user->can('review cases') || $user->can('manage users');
+        $caseQuery = SocialCase::query();
+        
+        if (!$isManager) {
+            $caseQuery->where('user_id', $user->id);
+        }
+
+        // --- ESTADÍSTICAS ---
+        if ($isManager) {
+            // KPI GLOBALES (Sensibles)
+            $stats = [
+                'label_pending' => 'Solicitudes Nuevas (Global)',
+                'pending' => SocialCase::where('status', 'open')->count(),
+                
+                'label_progress' => 'En Proceso (Global)',
+                'in_progress' => SocialCase::where('status', 'in_progress')->count(),
+                
+                'label_approved' => 'Aprobados Hoy (Total)',
+                'approved_today' => SocialCase::where('status', 'approved')->whereDate('updated_at', now())->count(),
+                
+                'label_total' => 'Base de Datos Ciudadanos',
+                'total_citizens' => Citizen::count(), 
+                'show_citizens' => true,
+            ];
+        } else {
+            // KPI PERSONALES (Productividad)
+            $stats = [
+                'label_pending' => 'Mis Casos Pendientes',
+                'pending' => (clone $caseQuery)->where('status', 'open')->count(),
+                
+                'label_progress' => 'Mis Casos en Revisión',
+                'in_progress' => (clone $caseQuery)->where('status', 'in_progress')->count(),
+                
+                'label_approved' => 'Mis Cargas Aprobadas Hoy',
+                'approved_today' => (clone $caseQuery)->where('status', 'approved')->whereDate('updated_at', now())->count(),
+                
+                'label_total' => 'Total Casos Creados (Histórico)',
+                'total_citizens' => (clone $caseQuery)->count(), 
+                'show_citizens' => false, 
+            ];
+        }
+
+        // --- ACTIVIDAD RECIENTE ---
+        $recentCases = $caseQuery->with(['citizen', 'category'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(fn($c) => [
+                'id' => $c->id,
+                'case_number' => $c->case_number,
+                'citizen' => $c->citizen->first_name . ' ' . $c->citizen->last_name,
+                'category' => $c->category->name,
+                'status' => $c->status,
+                'date' => $c->created_at->diffForHumans(),
+            ]);
+
+        return Inertia::render('dashboard', [
+            'stats' => $stats,
+            'recent_cases' => $recentCases,
+            'is_manager' => $isManager 
+        ]);
+    })->middleware(['auth', 'verified'])->name('dashboard');
     Route::get('/api/citizens/search', [CitizenController::class, 'searchApi'])->name('citizens.search');
     Route::get('/api/geo/municipalities', [CitizenController::class, 'getMunicipalities'])->name('geo.municipalities');
     Route::get('/api/geo/communities/{municipality}', [CitizenController::class, 'getCommunities'])->name('geo.communities');
@@ -29,6 +95,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/cases/categories', [CaseController::class, 'getCategories'])->name('cases.categories');
     Route::get('/api/cases/search-items', [CaseController::class, 'searchItems'])->name('cases.search-items');
     Route::post('/api/cases', [CaseController::class, 'store'])->name('cases.store');
+
+    Route::get('/cases/{id}/review', [CaseController::class, 'show'])->name('cases.show');
+    Route::post('/api/cases/{id}/review', [CaseController::class, 'review'])->name('cases.review');
+    Route::get('/cases', [CaseController::class, 'index'])->name('cases.index');
+    Route::put('/api/cases/{id}/assign', [CaseController::class, 'assign'])->name('cases.assign');
+
+    Route::group(['middleware' => ['can:manage users']], function () {
+        Route::resource('users', UserController::class);
+        Route::resource('roles', RoleController::class);
+    });
+
+    Route::group(['prefix' => 'admin', 'middleware' => ['can:manage settings']], function () {
+        Route::resource('categories',CategoryController::class);
+        Route::resource('supplies', SupplyController::class);
+        Route::resource('services', MedicalServiceController::class);
+    });
 });
 
 require __DIR__.'/settings.php';

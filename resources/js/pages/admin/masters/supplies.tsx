@@ -1,0 +1,186 @@
+import React, { useState, useEffect } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import { Head, useForm, router } from '@inertiajs/react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // <--- 1. IMPORTAR SELECT
+import { Label } from '@/components/ui/label';
+import { Plus, Pencil, Trash2, Pill, Search } from 'lucide-react';
+import Swal from 'sweetalert2';
+import PaginationLinks from '@/components/ui/pagination-links';
+import { useDebounce } from '@/hooks/useDebounce';
+
+export default function SuppliesManager({ supplies, filters, categories }: any) {
+    const [search, setSearch] = useState(filters.search || '');
+    const debouncedSearch = useDebounce(search, 300);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState<any>(null);
+
+
+    useEffect(() => {
+        router.get(route('supplies.index'), { search: debouncedSearch }, { preserveState: true, replace: true });
+    }, [debouncedSearch]);
+
+    const { data, setData, post, put, reset, processing, errors } = useForm({
+        name: '',
+        concentration: '',
+        unit: 'Unidad',
+        category_id: '' // <--- Nuevo campo
+    });
+
+    const openModal = (item?: any) => {
+        if (item) {
+            setEditingItem(item);
+            setData({
+                name: item.name,
+                concentration: item.concentration || '',
+                unit: item.unit,
+                category_id: item.category_id?.toString() || '' // <--- Cargar ID al editar
+            });
+        } else {
+            setEditingItem(null);
+            reset();
+            setData('category_id', ''); // <--- Limpiar al crear
+        }
+        setIsModalOpen(true);
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const action = editingItem ? put : post;
+        const url = editingItem ? route('supplies.update', editingItem.id) : route('supplies.store');
+
+        action(url, {
+            onSuccess: () => {
+                setIsModalOpen(false);
+                Swal.fire('Guardado', 'Insumo guardado correctamente', 'success');
+            }
+        });
+    };
+
+    const handleDelete = (id: number) => {
+        Swal.fire({ title: '¿Eliminar?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' })
+            .then((r) => { if (r.isConfirmed) router.delete(route('supplies.destroy', id)); });
+    };
+
+    return (
+        <AppLayout breadcrumbs={[{ title: 'Configuración', href: '#' }, { title: 'Insumos', href: '#' }]}>
+            <Head title="Insumos Médicos" />
+            <div className="py-8 max-w-7xl mx-auto px-4">
+
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                        <Pill className="text-blue-600" /> Insumos y Medicamentos
+                    </h2>
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        <div className="relative w-full sm:w-64">
+                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                            <Input placeholder="Buscar insumo..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+                        </div>
+                        <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
+                            <Plus className="mr-2 h-4 w-4" /> Nuevo
+                        </Button>
+                    </div>
+                </div>
+
+                <Card className="shadow-md border-t-4 border-t-blue-600">
+                    <CardContent className="p-0">
+                        <Table>
+                            <TableHeader className="bg-slate-50 dark:bg-neutral-800">
+                                <TableRow>
+                                    <TableHead>Nombre Comercial</TableHead>
+                                    <TableHead>Categoría</TableHead> {/* <--- Columna Nueva */}
+                                    <TableHead>Concentración</TableHead>
+                                    <TableHead>Presentación</TableHead>
+                                    <TableHead className="text-right">Acciones</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {supplies.data.length === 0 ? (
+                                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-slate-500">No hay registros.</TableCell></TableRow>
+                                ) : supplies.data.map((sup: any) => (
+                                    <TableRow key={sup.id}>
+                                        <TableCell className="font-medium">{sup.name}</TableCell>
+
+                                        {/* MOSTRAR CATEGORÍA EN LA TABLA */}
+                                        <TableCell>
+                                            {sup.category ? (
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                    {sup.category.name}
+                                                </span>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs">-</span>
+                                            )}
+                                        </TableCell>
+
+                                        <TableCell>{sup.concentration || '-'}</TableCell>
+                                        <TableCell><span className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs border">{sup.unit}</span></TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="ghost" size="icon" onClick={() => openModal(sup)}><Pencil className="h-4 w-4 text-blue-600" /></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(sup.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        <PaginationLinks links={supplies.links} from={supplies.from} to={supplies.to} total={supplies.total} />
+                    </CardContent>
+                </Card>
+
+                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                    <DialogContent>
+                        <DialogHeader><DialogTitle>{editingItem ? 'Editar Insumo' : 'Nuevo Insumo'}</DialogTitle></DialogHeader>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+
+                            {/* 3. SELECTOR DE CATEGORÍA */}
+                            <div>
+                                <Label>Categoría</Label>
+                                <Select
+                                    value={data.category_id}
+                                    onValueChange={(val) => setData('category_id', val)}
+                                >
+                                    <SelectTrigger className="mt-1">
+                                        <SelectValue placeholder="Seleccione una categoría..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map((cat: any) => (
+                                            <SelectItem key={cat.id} value={cat.id.toString()}>
+                                                {cat.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.category_id && <span className="text-red-500 text-xs">{errors.category_id}</span>}
+                            </div>
+
+                            <div>
+                                <Label>Nombre</Label>
+                                <Input value={data.name} onChange={e => setData('name', e.target.value)} required />
+                                {errors.name && <span className="text-red-500 text-xs">{errors.name}</span>}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label>Concentración (Opcional)</Label>
+                                    <Input value={data.concentration} onChange={e => setData('concentration', e.target.value)} placeholder="Ej: 500mg" />
+                                </div>
+                                <div>
+                                    <Label>Unidad/Presentación</Label>
+                                    <Input value={data.unit} onChange={e => setData('unit', e.target.value)} placeholder="Ej: Caja, Blister" required />
+                                    {errors.unit && <span className="text-red-500 text-xs">{errors.unit}</span>}
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end pt-2">
+                                <Button type="submit" disabled={processing} className="bg-blue-600">Guardar</Button>
+                            </div>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </AppLayout>
+    );
+}

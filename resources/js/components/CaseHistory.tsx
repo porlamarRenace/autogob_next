@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { History, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from '@inertiajs/react';
 
 export default function CaseHistory({ cases }: { cases: any[] }) {
     if (!cases || cases.length === 0) return null;
@@ -13,8 +14,13 @@ export default function CaseHistory({ cases }: { cases: any[] }) {
             case 'approved': return <Badge className="bg-green-500">Aprobado</Badge>;
             case 'rejected': return <Badge className="bg-red-500">Rechazado</Badge>;
             case 'closed': return <Badge className="bg-gray-500">Cerrado</Badge>;
+            case 'in_progress': return <Badge className="bg-yellow-500">En Progreso</Badge>;
             default: return <Badge variant="outline">{status}</Badge>;
         }
+    };
+
+    const handleViewCase = (caseId: number) => {
+        route(`/cases/${caseId}/review`);
     };
 
     return (
@@ -49,9 +55,11 @@ export default function CaseHistory({ cases }: { cases: any[] }) {
                                 </TableCell>
                                 <TableCell>{getStatusBadge(c.status)}</TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="ghost" size="icon">
-                                        <Eye className="h-4 w-4 text-slate-500" />
-                                    </Button>
+                                    <Link href={route('cases.show', c.id)} prefetch>
+                                        <Button variant="ghost" size="icon">
+                                            <Eye className="h-4 w-4 text-slate-500" />
+                                        </Button>
+                                    </Link>
                                 </TableCell>
                             </TableRow>
                         ))}

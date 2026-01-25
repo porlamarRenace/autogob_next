@@ -147,7 +147,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
     };
 
     return (
-        <Card className="border-t-4 border-t-green-600 shadow-lg h-full">
+        <Card className="border-t-4 border-t-green-600 shadow-lg h-full dark:border-green-600 dark:bg-neutral-950">
             <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-lg">
                     <ShoppingCart className="h-5 w-5" />
@@ -158,7 +158,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                 <form onSubmit={handleSubmit} className="space-y-5">
 
                     {/* Selectores Superiores */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-100 dark:bg-neutral-950 dark:border-neutral-800">
                         <div>
                             <Label className="text-xs uppercase text-slate-500 font-bold">Canal</Label>
                             <Select value={channel} onValueChange={setChannel}>
@@ -199,11 +199,11 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                         <Label>Agregar Ítems a la Solicitud</Label>
 
                         {/* Selector de Tipo (Tabs) */}
-                        <div className="flex bg-slate-100 p-1 rounded-md w-full sm:w-fit">
+                        <div className="flex bg-slate-100 p-1 rounded-md w-full sm:w-fit dark:bg-neutral-800">
                             <button
                                 type="button"
                                 onClick={() => { setSearchType('supply'); setSearchTerm(''); }}
-                                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-1.5 rounded text-sm font-medium transition-all ${searchType === 'supply' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-1.5 rounded text-sm font-medium transition-all ${searchType === 'supply' ? 'bg-white text-blue-600 shadow-sm dark:bg-neutral-700 dark:text-blue-200' : 'text-slate-500 hover:text-slate-700'
                                     }`}
                             >
                                 <Pill className="w-4 h-4" /> Medicamentos
@@ -211,7 +211,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                             <button
                                 type="button"
                                 onClick={() => { setSearchType('service'); setSearchTerm(''); }}
-                                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-1.5 rounded text-sm font-medium transition-all ${searchType === 'service' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-1.5 rounded text-sm font-medium transition-all ${searchType === 'service' ? 'bg-white text-purple-600 shadow-sm dark:bg-neutral-700 dark:text-purple-200' : 'text-slate-500 hover:text-slate-700'
                                     }`}
                             >
                                 <Stethoscope className="w-4 h-4" /> Servicios Médicos
@@ -227,7 +227,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                                     onChange={e => setSearchTerm(e.target.value)}
                                     onFocus={() => { if (searchTerm.length >= 2) setShowResults(true); }}
                                     placeholder={searchType === 'supply' ? "Escribe el medicamento (Ej: Losartán)..." : "Escribe el servicio (Ej: Rayos X)..."}
-                                    className="pl-9 pr-9 h-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                                    className="pl-9 pr-9 h-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500 dark:border-neutral-600 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                                 />
                                 {searchTerm && (
                                     <button
@@ -249,7 +249,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
 
                             {/* --- RESULTADOS FLOTANTES (Dropdown) --- */}
                             {showResults && (
-                                <div className="absolute top-12 left-0 w-full bg-white border border-slate-200 rounded-lg shadow-2xl z-50 max-h-72 overflow-y-auto animate-in fade-in zoom-in-95">
+                                <div className="absolute top-12 left-0 w-full bg-white border border-slate-200 rounded-lg shadow-2xl z-50 max-h-72 overflow-y-auto animate-in fade-in zoom-in-95 dark:bg-neutral-950 dark:border-neutral-800">
                                     {searchResults.length === 0 && !isSearching ? (
                                         <div className="p-4 text-center text-sm text-slate-500">
                                             No encontramos coincidencias para "{searchTerm}"
@@ -258,22 +258,22 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                                         searchResults.map((item) => (
                                             <div
                                                 key={item.id}
-                                                className="p-3 hover:bg-slate-50 border-b last:border-0 cursor-pointer flex justify-between items-center group transition-all"
+                                                className="p-3 hover:bg-slate-50 dark:hover:bg-neutral-800 border-b last:border-0 cursor-pointer flex justify-between items-center group transition-all"
                                                 onClick={() => addItem(item)}
                                             >
                                                 <div className="flex items-start gap-3">
                                                     {/* Icono según tipo */}
-                                                    <div className={`p-2 rounded-full ${item.type === 'supply' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'}`}>
+                                                    <div className={`p-2 rounded-full ${item.type === 'supply' ? 'bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200' : 'bg-purple-100 text-purple-600 dark:bg-purple-800 dark:text-purple-200'}`}>
                                                         {item.type === 'supply' ? <Pill className="w-4 h-4" /> : <Building2 className="w-4 h-4" />}
                                                     </div>
 
                                                     {/* Contenido Texto */}
                                                     <div className="flex flex-col">
-                                                        <span className="font-medium text-slate-800 group-hover:text-blue-700">
+                                                        <span className="font-medium text-slate-800 group-hover:text-blue-700 dark:text-slate-200 dark:group-hover:text-blue-200">
                                                             {item.name}
                                                         </span>
                                                         {/* Aquí mostramos la jerarquía o detalle */}
-                                                        <span className="text-xs text-slate-500 flex items-center gap-1">
+                                                        <span className="text-xs text-slate-500 flex items-center gap-1 dark:text-slate-400">
                                                             {item.type === 'supply' ? 'Concentración:' : 'Institución:'}
                                                             <span className="font-semibold">{item.details}</span>
                                                         </span>
@@ -281,7 +281,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                                                 </div>
 
                                                 {/* Badge Unidad */}
-                                                <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded border font-mono uppercase">
+                                                <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded border font-mono uppercase dark:bg-neutral-800 dark:text-slate-400 dark:border-neutral-700">
                                                     {item.unit}
                                                 </span>
                                             </div>
@@ -294,8 +294,8 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
 
                     {/* Tabla Carrito */}
                     {items.length > 0 && (
-                        <div className="border rounded-lg bg-white overflow-hidden shadow-sm mt-2">
-                            <div className="bg-slate-50 px-4 py-2 text-xs font-bold text-slate-500 uppercase border-b flex justify-between">
+                        <div className="border rounded-lg bg-white overflow-hidden shadow-sm mt-2 dark:bg-neutral-800">
+                            <div className="bg-slate-50 dark:bg-neutral-700 px-4 py-2 text-xs font-bold text-slate-500 dark:text-slate-200 uppercase border-b flex justify-between">
                                 <span>Ítems Agregados</span>
                                 <span>{items.length}</span>
                             </div>
@@ -303,10 +303,10 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                                 <table className="w-full text-sm text-left">
                                     <tbody className="divide-y">
                                         {items.map((item, idx) => (
-                                            <tr key={item.unique_id} className="hover:bg-slate-50/80">
+                                            <tr key={item.unique_id} className="hover:bg-slate-50/80 dark:hover:bg-neutral-700">
                                                 <td className="px-4 py-3">
-                                                    <div className="font-medium text-slate-800">{item.name}</div>
-                                                    <div className="text-xs text-slate-500">
+                                                    <div className="font-medium text-slate-800 dark:text-slate-200">{item.name}</div>
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400">
                                                         {item.type === 'service' && item.selection_detail
                                                             ? `Especialidad: ${item.selection_detail} • `
                                                             : ''}

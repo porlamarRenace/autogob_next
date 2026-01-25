@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Permission\Traits\HasRoles;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'supply' => 'App\Models\Supply',
             'service' => 'App\Models\MedicalService',
+            'user' => User::class,
         ]);
     }
 

@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             GeoSeeder::class,
             SystemDataSeeder::class,
             PrincipalSeeder::class,
+            RolesAndPermissionsSeeder::class,
         ]);
     }
 }
