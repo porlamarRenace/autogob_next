@@ -238,7 +238,7 @@ class CaseController extends Controller
             'items' => 'required|array',
             'items.*.id' => 'required|exists:case_items,id',
             'items.*.status' => 'required|in:approved,rejected',
-            'items.*.approved_quantity' => 'nullable|numeric|min:0',
+            'items.*.approved_qty' => 'nullable|numeric|min:0',
             'items.*.review_note' => 'nullable|string',
             'general_status' => 'required|in:approved,rejected,closed' 
         ]);
@@ -248,7 +248,7 @@ class CaseController extends Controller
             foreach ($request->items as $itemData) {
                 $case->items()->where('id', $itemData['id'])->update([
                     'status' => $itemData['status'],
-                    'approved_quantity' => $itemData['status'] === 'rejected' ? 0 : $itemData['approved_quantity'],
+                    'approved_quantity' => $itemData['status'] === 'rejected' ? 0 : $itemData['approved_qty'],
                     'review_note' => $itemData['review_note'],
                     'reviewed_by' => auth()->id(),
                 ]);
