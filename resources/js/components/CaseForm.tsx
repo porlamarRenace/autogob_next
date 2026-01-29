@@ -10,6 +10,8 @@ import { Trash2, Search, Loader2, Save, ShoppingCart, Pill, Building2, Stethosco
 import { Citizen } from '@/types/models';
 import Swal from 'sweetalert2';
 import { useDebounce } from '@/hooks/useDebounce';
+import BeneficiarySearch from '@/components/BeneficiarySearch';
+import PendingAttachments from '@/components/PendingAttachments';
 
 interface Props {
     citizen: Citizen;
@@ -42,9 +44,13 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
     const [categories, setCategories] = useState<any[]>([]);
     const [subcategories, setSubcategories] = useState<any[]>([]);
     const [categoryId, setCategoryId] = useState('');
+    const [selectedCategoryName, setSelectedCategoryName] = useState('');  // Para filtrar por tipo de categoría
     const [subcategoryId, setSubcategoryId] = useState('');
     const [channel, setChannel] = useState('Presencial');
     const [description, setDescription] = useState('');
+
+    // Determinar si la categoría es de Salud (para habilitar insumos médicos)
+    const isHealthCategory = selectedCategoryName.toLowerCase() === 'salud';
 
     // --- ESTADOS DE BÚSQUEDA ---
     const [searchType, setSearchType] = useState<'supply' | 'service'>('supply');
@@ -58,6 +64,12 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
     const [showResults, setShowResults] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
+    // Estado para beneficiario diferente al solicitante
+    const [beneficiary, setBeneficiary] = useState<Citizen | null>(null);
+
+    // Estado para archivos adjuntos pendientes
+    const [pendingFiles, setPendingFiles] = useState<any[]>([]);
+
     // Carga inicial
     useEffect(() => {
         axios.get(route('cases.categories')).then(res => setCategories(res.data));
@@ -65,12 +77,16 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
 
     // --- EFECTO: BÚSQUEDA AUTOMÁTICA ---
     useEffect(() => {
-        if (debouncedSearchTerm.length >= 2) {
+        if (debouncedSearchTerm.length >= 2 && subcategoryId) {
             setIsSearching(true);
             setShowResults(true);
 
             axios.get(route('cases.search-items'), {
-                params: { query: debouncedSearchTerm, type: searchType }
+                params: {
+                    query: debouncedSearchTerm,
+                    type: searchType,
+                    subcategory_id: subcategoryId  // Filtrar por subcategoría seleccionada
+                }
             })
                 .then(res => setSearchResults(res.data))
                 .catch(() => setSearchResults([]))
@@ -79,7 +95,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
             setSearchResults([]);
             setShowResults(false);
         }
-    }, [debouncedSearchTerm, searchType]); // Se ejecuta cuando cambia el texto (debounceado) o el tipo
+    }, [debouncedSearchTerm, searchType, subcategoryId]); // Se ejecuta cuando cambia el texto, tipo o subcategoría
 
     // Click Outside para cerrar resultados
     useEffect(() => {
@@ -96,7 +112,11 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
         setCategoryId(val);
         setSubcategoryId('');
         setItems([]);
+        setDescription(''); // Limpiar observaciones al cambiar categoría (Req. 7)
+        setSearchTerm('');  // Limpiar búsqueda
+        setSearchResults([]);
         const cat = categories.find(c => c.id.toString() === val);
+        setSelectedCategoryName(cat?.name || '');
         setSubcategories(cat?.children || []);
     };
 
@@ -129,14 +149,39 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
 
         setSubmitting(true);
         try {
-            await axios.post(route('cases.store'), {
-                citizen_id: citizen.id,
+            // citizen es el solicitante, beneficiary es quien puede ser diferente
+            const actualBeneficiary = beneficiary || citizen;
+
+            const response = await axios.post(route('cases.store'), {
+                citizen_id: citizen.id, // Mantener por compatibilidad
+                applicant_id: citizen.id, // El solicitante siempre es citizen
+                beneficiary_id: actualBeneficiary.id, // Puede ser diferente o igual
                 category_id: categoryId,
                 subcategory_id: subcategoryId,
                 channel,
                 description,
                 items
             });
+
+            const caseId = response.data.case?.id;
+
+            // Subir archivos adjuntos después de crear el caso
+            if (caseId && pendingFiles.length > 0) {
+                for (const pf of pendingFiles) {
+                    const formData = new FormData();
+                    formData.append('file', pf.file);
+                    formData.append('description', pf.description || '');
+
+                    try {
+                        await axios.post(`/api/cases/${caseId}/attachments`, formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                        });
+                    } catch (uploadErr) {
+                        console.error('Error uploading attachment:', uploadErr);
+                    }
+                }
+            }
+
             Toast.fire({ icon: "success", title: "Solicitud creada" });
             onSuccess();
         } catch (error: any) {
@@ -181,6 +226,15 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                         </div>
                     </div>
 
+                    {/* Selector de Beneficiario */}
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 dark:bg-neutral-950 dark:border-neutral-800">
+                        <BeneficiarySearch
+                            applicant={citizen}
+                            selectedBeneficiary={beneficiary}
+                            onBeneficiarySelected={setBeneficiary}
+                        />
+                    </div>
+
                     {/* Subcategoría (Condicional) */}
                     <div className={`transition-all duration-300 ${!categoryId ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
                         <Label>Tipo Específico de Ayuda</Label>
@@ -198,7 +252,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                     <div className={`space-y-3 transition-opacity ${!subcategoryId ? 'opacity-40 pointer-events-none' : ''}`}>
                         <Label>Agregar Ítems a la Solicitud</Label>
 
-                        {/* Selector de Tipo (Tabs) */}
+                        {/* Selector de Tipo (Tabs) - Siempre visible cuando hay subcategoría */}
                         <div className="flex bg-slate-100 p-1 rounded-md w-full sm:w-fit dark:bg-neutral-800">
                             <button
                                 type="button"
@@ -206,7 +260,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                                 className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-1.5 rounded text-sm font-medium transition-all ${searchType === 'supply' ? 'bg-white text-blue-600 shadow-sm dark:bg-neutral-700 dark:text-blue-200' : 'text-slate-500 hover:text-slate-700'
                                     }`}
                             >
-                                <Pill className="w-4 h-4" /> Medicamentos
+                                <Pill className="w-4 h-4" /> Insumos
                             </button>
                             <button
                                 type="button"
@@ -214,7 +268,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                                 className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-1.5 rounded text-sm font-medium transition-all ${searchType === 'service' ? 'bg-white text-purple-600 shadow-sm dark:bg-neutral-700 dark:text-purple-200' : 'text-slate-500 hover:text-slate-700'
                                     }`}
                             >
-                                <Stethoscope className="w-4 h-4" /> Servicios Médicos
+                                <Stethoscope className="w-4 h-4" /> Servicios
                             </button>
                         </div>
 
@@ -226,7 +280,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
                                     onFocus={() => { if (searchTerm.length >= 2) setShowResults(true); }}
-                                    placeholder={searchType === 'supply' ? "Escribe el medicamento (Ej: Losartán)..." : "Escribe el servicio (Ej: Rayos X)..."}
+                                    placeholder={searchType === 'supply' ? "Escribe el nombre del insumo..." : "Escribe el nombre del servicio..."}
                                     className="pl-9 pr-9 h-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500 dark:border-neutral-600 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                                 />
                                 {searchTerm && (
@@ -355,6 +409,12 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                         />
                     </div>
 
+                    {/* Documentos de Soporte */}
+                    <PendingAttachments
+                        pendingFiles={pendingFiles}
+                        onFilesChange={setPendingFiles}
+                    />
+
                     <div className="flex justify-end pt-2">
                         <Button type="submit" className="bg-green-600 hover:bg-green-700 w-full sm:w-auto min-w-[200px]" disabled={submitting}>
                             {submitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2 h-4 w-4" />}
@@ -363,6 +423,6 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                     </div>
                 </form>
             </CardContent>
-        </Card>
+        </Card >
     );
 }

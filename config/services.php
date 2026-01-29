@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'person_lookup' => [
+        'url' => env('PERSON_LOOKUP_API_URL', 'https://psuvne.org/app_cruce_informacion/endPoint_persona.php'),
+        'key' => env('PERSON_LOOKUP_API_KEY', 'key'),
+    ],
+
 ];

@@ -25,25 +25,72 @@ class CitizenController extends Controller
             'nationality' => 'nullable|in:V,E'
         ]);
 
-        $query = Citizen::query()
-            ->where('identification_value', 'LIKE', "%{$request->identification_value}%");
+        $cedula = $request->identification_value;
+        $nationality = $request->nationality ?? 'V';
 
-        if ($request->nationality) {
-            $query->where('nationality', $request->nationality);
-        }
+        // 1. Buscar primero en BD local
+        $citizen = Citizen::where('identification_value', $cedula)
+            ->where('nationality', $nationality)
+            ->with(['street.community.municipality', 'healthProfile'])
+            ->first();
 
-        // Cargamos relaciones útiles como la dirección
-        $citizen = $query->with(['street.community.municipality','healthProfile'])->first();
+        $source = 'local';
+        $wasCreated = false;
 
+        // 2. Si no existe localmente, consultar API externa y crear
         if (!$citizen) {
-            return response()->json(['found' => false, 'message' => 'Ciudadano no encontrado'], 404);
+            $lookupService = new \App\Services\PersonLookupService();
+            $externalData = $lookupService->lookup($cedula);
+
+            if (!$externalData || !$externalData['found']) {
+                return response()->json([
+                    'found' => false,
+                    'source' => 'none',
+                    'message' => 'Ciudadano no encontrado en registros locales ni externos'
+                ], 404);
+            }
+
+            // Crear ciudadano con datos externos
+            $citizen = Citizen::create([
+                'nationality' => $externalData['nationality'] ?? $nationality,
+                'identification_value' => $externalData['identification_value'] ?? $cedula,
+                'first_name' => $externalData['first_name'] ?? '',
+                'last_name' => $externalData['last_name'] ?? '',
+                'birth_date' => $externalData['birth_date'] ?? null,
+                'gender' => $externalData['gender'] ?? null,
+                'phone' => !empty($externalData['phone']) ? $externalData['phone'] : null,
+            ]);
+
+            // Crear perfil de salud vacío
+            $citizen->healthProfile()->create([
+                'notes' => null,
+                'blood_type' => null,
+            ]);
+
+            $citizen->load(['street.community.municipality', 'healthProfile']);
+            $source = 'external';
+            $wasCreated = true;
         }
-        $citizen->street_name = $citizen->street->name;
-        $citizen->community_name = $citizen->street->community->name;
-        $citizen->municipality_name = $citizen->street->community->municipality->name;
+
+        // 3. Agregar nombres de ubicación si existen
+        if ($citizen->street) {
+            $citizen->street_name = $citizen->street->name;
+            $citizen->community_name = $citizen->street->community->name ?? null;
+            $citizen->municipality_name = $citizen->street->community->municipality->name ?? null;
+        }
+
+        // 4. Verificar completitud del perfil
+        $profileService = new \App\Services\ProfileValidationService();
+        $profileStatus = $profileService->getProfileStatus($citizen);
+
         return response()->json([
             'found' => true,
+            'source' => $source,
+            'was_created' => $wasCreated,
             'citizen' => $citizen,
+            'profile_complete' => $profileStatus['complete'],
+            'profile_errors' => $profileStatus['errors'],
+            'missing_sections' => $profileStatus['missing_sections'],
             'active_case' => $citizen->cases()
                 ->whereIn('status', ['open', 'in_progress'])
                 ->with('category')
@@ -51,7 +98,10 @@ class CitizenController extends Controller
             'history' => $citizen->cases()
                 ->with(['category', 'subcategory', 'creator'])
                 ->latest()
-                ->get()
+                ->get(),
+            'message' => $wasCreated 
+                ? 'Ciudadano registrado desde sistema externo. Por favor complete los datos faltantes.' 
+                : null
         ]);
     }
 
@@ -85,7 +135,7 @@ class CitizenController extends Controller
             // 2. Crear Ciudadano
             $citizen = Citizen::create([
                 'nationality' => $validated['nationality'],
-                'identification_value' => $validated['identification_value'], // Mapeo
+                'identification_value' => $validated['identification_value'],
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'birth_date' => $validated['birth_date'],
@@ -94,7 +144,9 @@ class CitizenController extends Controller
                 'phone' => $validated['phone'] ?? null,
                 'street_id' => $validated['street_id'],
                 'reference_point' => $validated['reference_point'] ?? null,
-                // Guardamos datos sociales en el JSON 'social_data' si tu tabla lo soporta
+                'photo' => $validated['photo'] ?? null,
+                'representative_id' => $validated['representative_id'] ?? null,
+                // Guardamos datos sociales en el JSON 'social_data'
                 'social_data' => [
                     'profession' => $validated['profession'] ?? null,
                     'education_level' => $validated['education_level'] ?? null,
@@ -106,7 +158,7 @@ class CitizenController extends Controller
             $citizen->municipality_name = $citizen->street->community->municipality->name;
             return response()->json([
                 'message' => 'Ciudadano registrado correctamente',
-                'citizen' => $citizen->load('healthProfile')
+                'citizen' => $citizen->load(['healthProfile', 'representative'])
             ]);
         });
     }
@@ -128,6 +180,8 @@ class CitizenController extends Controller
                 'phone' => $validated['phone'] ?? null,
                 'street_id' => $validated['street_id'],
                 'reference_point' => $validated['reference_point'] ?? null,
+                'photo' => $validated['photo'] ?? null,
+                'representative_id' => $validated['representative_id'] ?? null,
                 'social_data' => [
                     'profession' => $validated['profession'] ?? null,
                     'education_level' => $validated['education_level'] ?? null,
@@ -139,7 +193,7 @@ class CitizenController extends Controller
 
             return response()->json([
                 'message' => 'Datos actualizados correctamente',
-                'citizen' => $citizen->load('healthProfile')
+                'citizen' => $citizen->load(['healthProfile', 'representative', 'street', 'street.community', 'street.community.municipality'])
             ]);
         });
     }
@@ -151,12 +205,21 @@ class CitizenController extends Controller
             $uniqueRule .= ',' . $ignoreId;
         }
 
-        return $request->validate([
+        // Validar si es menor de edad
+        $birthDate = $request->input('birth_date');
+        $isMinor = false;
+        if ($birthDate) {
+            $age = Carbon::parse($birthDate)->diffInYears(Carbon::now());
+            $isMinor = $age < 18;
+        }
+
+        // Reglas base
+        $rules = [
             'nationality' => 'required|in:V,E',
-            'identification_value' => ['required', $ignoreId ? '' : $uniqueRule], // Solo validamos unique al crear
+            'identification_value' => ['required', $ignoreId ? '' : $uniqueRule],
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
-            'birth_date' => 'required|date',
+            'birth_date' => 'required|date|before_or_equal:today',
             'gender' => 'required|in:M,F',
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
@@ -187,12 +250,53 @@ class CitizenController extends Controller
             'has_gastro_condition' => 'boolean',
             'has_skin_condition' => 'boolean',
 
-            'blood_type' => 'nullable|string|max:5',
-            'weight' => 'nullable|numeric',
-            'height' => 'nullable|numeric',
+            'blood_type' => 'nullable|in:A+,A-,B+,B-,O+,O-,AB+,AB-',
+            'weight' => 'nullable|numeric|min:0|max:500',
+            'height' => 'nullable|numeric|min:0|max:300',
             'medical_history_notes' => 'nullable|string',
-            'disability_type' => 'nullable|string'
-        ]);
+            'disability_type' => 'nullable|string',
+            
+            // Foto
+            'photo' => 'nullable|string',
+        ];
+
+        // Si es menor, requerir representante
+        if ($isMinor) {
+            $rules['representative_id'] = 'required|exists:citizens,id';
+        } else {
+            $rules['representative_id'] = 'nullable|exists:citizens,id';
+        }
+
+        // Mensajes en español
+        $messages = [
+            'nationality.required' => 'La nacionalidad es obligatoria.',
+            'nationality.in' => 'La nacionalidad debe ser V (Venezolano) o E (Extranjero).',
+            'identification_value.required' => 'El número de cédula es obligatorio.',
+            'identification_value.unique' => 'Este número de cédula ya está registrado en el sistema.',
+            'first_name.required' => 'El nombre es obligatorio.',
+            'first_name.max' => 'El nombre no puede tener más de 100 caracteres.',
+            'last_name.required' => 'El apellido es obligatorio.',
+            'last_name.max' => 'El apellido no puede tener más de 100 caracteres.',
+            'birth_date.required' => 'La fecha de nacimiento es obligatoria.',
+            'birth_date.date' => 'La fecha de nacimiento no tiene un formato válido.',
+            'birth_date.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.',
+            'gender.required' => 'El género es obligatorio.',
+            'gender.in' => 'El género debe ser M (Masculino) o F (Femenino).',
+            'email.email' => 'El correo electrónico no tiene un formato válido.',
+            'street_id.required' => 'Debe seleccionar una calle.',
+            'street_id.exists' => 'La calle seleccionada no existe.',
+            'blood_type.in' => 'El tipo de sangre debe ser uno de: A+, A-, B+, B-, O+, O-, AB+, AB-.',
+            'weight.numeric' => 'El peso debe ser un número.',
+            'weight.min' => 'El peso debe ser mayor a 0.',
+            'weight.max' => 'El peso no puede exceder los 500 kg.',
+            'height.numeric' => 'La altura debe ser un número.',
+            'height.min' => 'La altura debe ser mayor a 0.',
+            'height.max' => 'La altura no puede exceder los 300 cm.',
+            'representative_id.required' => 'Los ciudadanos menores de edad deben tener un representante legal.',
+            'representative_id.exists' => 'El representante seleccionado no está registrado en el sistema.',
+        ];
+
+        return $request->validate($rules, $messages);
     }
 
     // Función auxiliar para guardar salud (DRY)
@@ -227,5 +331,118 @@ class CitizenController extends Controller
                 'notes' => $validated['medical_history_notes'] ?? null,
             ]
         );
+    }
+
+    /**
+     * Upload citizen photo (max 2MB)
+     */
+    public function uploadPhoto(Request $request, $id)
+    {
+        $request->validate([
+            'photo' => 'required|file|mimes:jpg,jpeg,png|max:2048' // 2MB max
+        ], [
+            'photo.required' => 'Debe seleccionar una imagen',
+            'photo.mimes' => 'La imagen debe ser JPG, JPEG o PNG',
+            'photo.max' => 'La imagen no puede superar los 2MB'
+        ]);
+
+        $citizen = Citizen::findOrFail($id);
+        
+        // Clear existing photo and add new one
+        $citizen->clearMediaCollection('photo');
+        $citizen->addMediaFromRequest('photo')
+            ->toMediaCollection('photo');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Foto actualizada correctamente',
+            'photo_url' => $citizen->fresh()->photo_url
+        ]);
+    }
+
+    /**
+     * Delete citizen photo
+     */
+    public function deletePhoto($id)
+    {
+        $citizen = Citizen::findOrFail($id);
+        $citizen->clearMediaCollection('photo');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Foto eliminada correctamente'
+        ]);
+    }
+
+    /**
+     * Get profile completeness status for case creation
+     */
+    public function getProfileStatus($id)
+    {
+        $citizen = Citizen::with('healthProfile')->findOrFail($id);
+        
+        $service = new \App\Services\ProfileValidationService();
+        $status = $service->getProfileStatus($citizen);
+
+        return response()->json($status);
+    }
+
+    /**
+     * Lookup person by cedula - first locally, then external API
+     */
+    public function lookupExternal(Request $request)
+    {
+        $request->validate([
+            'cedula' => 'required|string|min:5|max:15',
+            'nationality' => 'nullable|in:V,E'
+        ]);
+
+        $cedula = $request->input('cedula');
+        $nationality = $request->input('nationality', 'V');
+
+        // 1. First, search locally in our database
+        $localCitizen = Citizen::where('identification_value', $cedula)
+            ->where('nationality', $nationality)
+            ->with(['street.community.municipality', 'healthProfile'])
+            ->first();
+
+        if ($localCitizen) {
+            // Add location names if available
+            if ($localCitizen->street) {
+                $localCitizen->street_name = $localCitizen->street->name;
+                $localCitizen->community_name = $localCitizen->street->community->name ?? null;
+                $localCitizen->municipality_name = $localCitizen->street->community->municipality->name ?? null;
+            }
+
+            return response()->json([
+                'source' => 'local',
+                'found' => true,
+                'citizen' => $localCitizen,
+                'active_case' => $localCitizen->cases()
+                    ->whereIn('status', ['open', 'in_progress'])
+                    ->with('category')
+                    ->first(),
+            ]);
+        }
+
+        // 2. Not found locally - query external API
+        $lookupService = new \App\Services\PersonLookupService();
+        $externalData = $lookupService->lookup($cedula);
+
+        if (!$externalData || !$externalData['found']) {
+            return response()->json([
+                'source' => 'none',
+                'found' => false,
+                'message' => 'Persona no encontrada en registros locales ni externos'
+            ], 404);
+        }
+
+        // Return external data (pre-populated for form)
+        return response()->json([
+            'source' => 'external',
+            'found' => true,
+            'citizen' => $externalData,
+            'message' => 'Datos obtenidos de sistema externo. Complete el registro.'
+        ]);
     }
 }

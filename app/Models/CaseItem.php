@@ -22,7 +22,13 @@ class CaseItem extends Model
         'status',
         'description',
         'reviewed_by',
-        'review_note'
+        'review_note',
+        'fulfilled_at',
+        'fulfilled_by'
+    ];
+
+    protected $casts = [
+        'fulfilled_at' => 'datetime',
     ];
 
     public function socialCase()
@@ -38,5 +44,10 @@ class CaseItem extends Model
     public function reviewer()
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function fulfilledBy()
+    {
+        return $this->belongsTo(User::class, 'fulfilled_by');
     }
 }

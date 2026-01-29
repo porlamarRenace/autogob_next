@@ -91,15 +91,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('/cases/create', [CitizenController::class, 'index'])->name('cases.create');
     Route::put('/api/citizens/{id}', [CitizenController::class, 'update'])->name('citizens.update');
+    
+    // Citizen photo and profile validation routes
+    Route::post('/api/citizens/{id}/photo', [CitizenController::class, 'uploadPhoto'])->name('citizens.upload-photo');
+    Route::delete('/api/citizens/{id}/photo', [CitizenController::class, 'deletePhoto'])->name('citizens.delete-photo');
+    Route::get('/api/citizens/{id}/profile-status', [CitizenController::class, 'getProfileStatus'])->name('citizens.profile-status');
+    
+    // External person lookup (searches local first, then external API)
+    Route::post('/api/citizens/lookup', [CitizenController::class, 'lookupExternal'])->name('citizens.lookup-external');
 
     Route::get('/api/cases/categories', [CaseController::class, 'getCategories'])->name('cases.categories');
     Route::get('/api/cases/search-items', [CaseController::class, 'searchItems'])->name('cases.search-items');
     Route::post('/api/cases', [CaseController::class, 'store'])->name('cases.store');
+    
+    // Case attachments routes
+    Route::post('/api/cases/{id}/attachments', [CaseController::class, 'uploadAttachment'])->name('cases.upload-attachment');
+    Route::delete('/api/cases/{caseId}/attachments/{mediaId}', [CaseController::class, 'deleteAttachment'])->name('cases.delete-attachment');
+    Route::get('/api/cases/{caseId}/attachments/{mediaId}/download', [CaseController::class, 'downloadAttachment'])->name('cases.download-attachment');
 
     Route::get('/cases/{id}/review', [CaseController::class, 'show'])->name('cases.show');
     Route::post('/api/cases/{id}/review', [CaseController::class, 'review'])->name('cases.review');
     Route::get('/cases', [CaseController::class, 'index'])->name('cases.index');
     Route::put('/api/cases/{id}/assign', [CaseController::class, 'assign'])->name('cases.assign');
+    Route::post('/api/cases/{caseId}/items/{itemId}/fulfill', [CaseController::class, 'fulfillItem'])->name('cases.items.fulfill');
 
     Route::group(['middleware' => ['can:manage users']], function () {
         Route::resource('users', UserController::class);

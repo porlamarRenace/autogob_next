@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Save, User, MapPin, Briefcase, Activity, Pencil } from 'lucide-react';
+import PhotoUpload from '@/components/PhotoUpload';
 import { Municipality, Community, Street, Citizen } from '@/types/models';
 
 interface Props {
@@ -45,6 +46,34 @@ export default function CitizenForm({
     const [loadingStreet, setLoadingStreet] = useState(false);
 
     // --- FORMULARIO PRINCIPAL ---
+    // Blood type options
+    const bloodTypeOptions = [
+        { value: 'A+', label: 'A+' },
+        { value: 'A-', label: 'A-' },
+        { value: 'B+', label: 'B+' },
+        { value: 'B-', label: 'B-' },
+        { value: 'O+', label: 'O+' },
+        { value: 'O-', label: 'O-' },
+        { value: 'AB+', label: 'AB+' },
+        { value: 'AB-', label: 'AB-' },
+    ];
+
+    // Calculate if citizen is minor based on birth date
+    const calculateIsMinor = (birthDate: string): boolean => {
+        if (!birthDate) return false;
+        const today = new Date();
+        const birth = new Date(birthDate);
+        const age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            return age - 1 < 18;
+        }
+        return age < 18;
+    };
+
+    // Get today's date in YYYY-MM-DD format for max date validation
+    const today = new Date().toISOString().split('T')[0];
+
     const { data, setData, put, post, processing, errors } = useForm({
         // 1. PERSONALES
         nationality: citizenToEdit?.nationality || initialNationality,
@@ -56,6 +85,8 @@ export default function CitizenForm({
         gender: citizenToEdit?.gender || '',
         email: citizenToEdit?.email || '',
         phone: citizenToEdit?.phone || '',
+        // Representante legal (para menores)
+        representative_id: citizenToEdit?.representative_id?.toString() || '',
 
         // 2. DIRECCIÓN
         // Nota: En edición simple, el usuario deberá re-seleccionar la cascada si quiere cambiar la calle.
@@ -197,6 +228,15 @@ export default function CitizenForm({
 
                         {/* --- 1. PERSONAL --- */}
                         <TabsContent value="personal" className="space-y-4 animate-in fade-in zoom-in-95">
+                            {/* Photo Upload - solo visible al editar */}
+                            {citizenToEdit && (
+                                <div className="flex justify-center mb-4">
+                                    <PhotoUpload
+                                        citizenId={citizenToEdit.id}
+                                        currentPhotoUrl={citizenToEdit.photo_url}
+                                    />
+                                </div>
+                            )}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label>Identificación</Label>
@@ -207,7 +247,17 @@ export default function CitizenForm({
                                 </div>
                                 <div>
                                     <Label>Fecha de Nacimiento</Label>
-                                    <Input type="date" value={data.birth_date} onChange={e => setData('birth_date', e.target.value)} required className="mt-1.5" />
+                                    <Input
+                                        type="date"
+                                        value={data.birth_date}
+                                        onChange={e => setData('birth_date', e.target.value)}
+                                        max={today}
+                                        required
+                                        className="mt-1.5"
+                                    />
+                                    {data.birth_date && calculateIsMinor(data.birth_date) && (
+                                        <p className="text-xs text-amber-600 mt-1">⚠️ Ciudadano menor de edad - Requiere representante legal</p>
+                                    )}
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -228,6 +278,29 @@ export default function CitizenForm({
                                 <div><Label>Teléfono</Label><Input value={data.phone} onChange={e => setData('phone', e.target.value)} className="mt-1.5" /></div>
                                 <div><Label>Email</Label><Input type="email" value={data.email} onChange={e => setData('email', e.target.value)} className="mt-1.5" /></div>
                             </div>
+
+                            {/* Sección de Representante Legal para Menores */}
+                            {data.birth_date && calculateIsMinor(data.birth_date) && (
+                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-900/20 dark:border-amber-800 animate-in slide-in-from-top-2">
+                                    <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-3 flex items-center gap-2">
+                                        <User className="w-4 h-4" />
+                                        Representante Legal (Requerido para menores)
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <Label>Cédula del Representante</Label>
+                                            <Input
+                                                value={data.representative_id}
+                                                onChange={e => setData('representative_id', e.target.value)}
+                                                placeholder="Ingrese cédula del representante"
+                                                className="mt-1.5"
+                                                required
+                                            />
+                                            <p className="text-xs text-slate-500 mt-1">El representante debe estar registrado en el sistema</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </TabsContent>
 
                         {/* --- 2. DIRECCIÓN --- */}
@@ -295,7 +368,19 @@ export default function CitizenForm({
                         <TabsContent value="health" className="space-y-6 animate-in fade-in zoom-in-95">
                             {/* Antropometría */}
                             <div className="grid grid-cols-3 gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-md border">
-                                <div><Label>Tipo Sangre</Label><Input value={data.blood_type} onChange={e => setData('blood_type', e.target.value)} placeholder="O+" className="mt-1" /></div>
+                                <div>
+                                    <Label>Tipo de Sangre</Label>
+                                    <Select value={data.blood_type} onValueChange={val => setData('blood_type', val)}>
+                                        <SelectTrigger className="mt-1">
+                                            <SelectValue placeholder="Seleccione..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {bloodTypeOptions.map(opt => (
+                                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                                 <div><Label>Peso (kg)</Label><Input type="number" value={data.weight} onChange={e => setData('weight', e.target.value)} className="mt-1" /></div>
                                 <div><Label>Altura (cm)</Label><Input type="number" value={data.height} onChange={e => setData('height', e.target.value)} className="mt-1" /></div>
                             </div>

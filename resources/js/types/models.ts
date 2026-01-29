@@ -15,10 +15,14 @@ export interface Citizen {
     email?: string;
     birth_date: string;
     age?: number;
+    is_minor?: boolean;
     gender: 'M' | 'F';
     phone?: string;
     reference_point?: string;
     street_id?: number;
+    photo?: string;
+    representative_id?: number;
+    representative?: Citizen;
     social_data?: Record<string, any>;
     health_profile?: HealthProfile;
     street_name?: string;
@@ -26,10 +30,12 @@ export interface Citizen {
     municipality_name?: string;
 }
 
+export type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-';
+
 export interface HealthProfile {
     id: number;
     citizen_id: number;
-    blood_type: string;
+    blood_type?: BloodType;
     height: number;
     weight: number;
     medical_history_notes: string;

@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CheckCircle2, XCircle, FileText, User, UserPlus, Save, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { CheckCircle2, XCircle, FileText, User, UserPlus, Save, ArrowLeft, ShieldAlert, Gift } from 'lucide-react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import CaseAttachments from '@/components/CaseAttachments';
 
 interface Props {
     socialCase: any;
@@ -20,6 +21,9 @@ interface Props {
 
 export default function Review({ socialCase, specialists, can }: Props) {
     const [processing, setProcessing] = useState(false);
+
+    // Estado local para el estado del caso
+    const [caseStatus, setCaseStatus] = useState(socialCase.status);
 
     // Estado para Asignación
     const [selectedSpecialist, setSelectedSpecialist] = useState(socialCase.assigned_to?.toString() || '');
@@ -31,9 +35,10 @@ export default function Review({ socialCase, specialists, can }: Props) {
             name: item.itemable?.name || 'Ítem',
             requested_qty: item.quantity,
             approved_qty: item.approved_quantity !== null ? item.approved_quantity : item.quantity,
-            status: item.status, // pending, approved, rejected
+            status: item.status, // pending, approved, rejected, fulfilled
             review_note: item.review_note || '',
-            unit: item.itemable?.unit || 'UND'
+            unit: item.itemable?.unit || 'UND',
+            fulfilled_at: item.fulfilled_at || null
         }))
     );
 
@@ -62,6 +67,42 @@ export default function Review({ socialCase, specialists, can }: Props) {
         const updated = [...itemsReview];
         updated[index].approved_qty = parseInt(val) || 0;
         setItemsReview(updated);
+    };
+
+    // --- MARCAR COMO CUMPLIDO ---
+    const handleFulfill = async (index: number, itemId: number) => {
+        const result = await Swal.fire({
+            title: '¿Marcar como cumplido?',
+            text: 'Esto indica que el ítem fue entregado o el servicio realizado.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, marcar cumplido',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            const response = await axios.post(`/api/cases/${socialCase.id}/items/${itemId}/fulfill`);
+            if (response.data.success) {
+                const updated = [...itemsReview];
+                updated[index].status = 'fulfilled';
+                updated[index].fulfilled_at = new Date().toISOString();
+                setItemsReview(updated);
+
+                if (response.data.case_status) {
+                    setCaseStatus(response.data.case_status);
+                }
+
+                Swal.fire('¡Cumplido!', response.data.message, 'success').then(() => {
+                    if (response.data.case_closed) {
+                        window.location.reload();
+                    }
+                });
+            }
+        } catch (error: any) {
+            Swal.fire('Error', error.response?.data?.message || 'No se pudo procesar', 'error');
+        }
     };
 
     const submitReview = async () => {
@@ -137,7 +178,7 @@ export default function Review({ socialCase, specialists, can }: Props) {
                         </Card>
 
                         {/* 2. TARJETA DE ASIGNACIÓN (Solo si tiene permiso 'assign') */}
-                        {can.assign && socialCase.status !== 'closed' && (
+                        {can.assign && caseStatus !== 'closed' && (
                             <Card className="border-t-4 border-t-orange-500 shadow-md">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-base">
@@ -230,7 +271,7 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                                                     }`}
                                                                 value={item.approved_qty}
                                                                 onChange={(e) => handleQtyChange(idx, e.target.value)}
-                                                                disabled={item.status === 'rejected' || socialCase.status === 'closed'}
+                                                                disabled={item.status === 'rejected' || caseStatus === 'closed' || caseStatus === 'rejected'}
                                                                 min={0}
                                                                 max={item.requested_qty}
                                                             />
@@ -238,26 +279,49 @@ export default function Review({ socialCase, specialists, can }: Props) {
 
                                                         <TableCell className="text-center align-top pt-3 pr-6">
                                                             <div className="flex justify-end gap-1">
-                                                                <Button
-                                                                    size="icon"
-                                                                    variant={item.status === 'approved' ? 'default' : 'outline'}
-                                                                    className={`h-9 w-9 rounded-full ${item.status === 'approved' ? 'bg-green-600 hover:bg-green-700' : 'text-slate-400 dark:hover:bg-green-600 '}`}
-                                                                    onClick={() => handleStatusChange(idx, 'approved')}
-                                                                    disabled={socialCase.status === 'closed'}
-                                                                    title="Aprobar Ítem"
-                                                                >
-                                                                    <CheckCircle2 className="h-5 w-5" />
-                                                                </Button>
-                                                                <Button
-                                                                    size="icon"
-                                                                    variant={item.status === 'rejected' ? 'destructive' : 'outline'}
-                                                                    className={`h-9 w-9 rounded-full ${item.status === 'rejected' ? '' : 'text-slate-400 hover:text-red-500 hover:border-red-200'}`}
-                                                                    onClick={() => handleStatusChange(idx, 'rejected')}
-                                                                    disabled={socialCase.status === 'closed'}
-                                                                    title="Rechazar Ítem"
-                                                                >
-                                                                    <XCircle className="h-5 w-5" />
-                                                                </Button>
+                                                                {/* Botón Cumplido - solo para ítems aprobados */}
+                                                                {item.status === 'approved' && (
+                                                                    <Button
+                                                                        size="icon"
+                                                                        variant="outline"
+                                                                        className="h-9 w-9 rounded-full text-purple-600 hover:bg-purple-100 hover:text-purple-700 border-purple-300"
+                                                                        onClick={() => handleFulfill(idx, item.id)}
+                                                                        title="Marcar como Cumplido/Entregado"
+                                                                    >
+                                                                        <Gift className="h-5 w-5" />
+                                                                    </Button>
+                                                                )}
+                                                                {/* Badge de Cumplido */}
+                                                                {item.status === 'fulfilled' && (
+                                                                    <Badge className="bg-purple-600 text-white text-xs">
+                                                                        ✓ Cumplido
+                                                                    </Badge>
+                                                                )}
+                                                                {/* Botones de Aprobar/Rechazar - solo si no está cumplido */}
+                                                                {item.status !== 'fulfilled' && (
+                                                                    <>
+                                                                        <Button
+                                                                            size="icon"
+                                                                            variant={item.status === 'approved' ? 'default' : 'outline'}
+                                                                            className={`h-9 w-9 rounded-full ${item.status === 'approved' ? 'bg-green-600 hover:bg-green-700' : 'text-slate-400 dark:hover:bg-green-600 '}`}
+                                                                            onClick={() => handleStatusChange(idx, 'approved')}
+                                                                            disabled={caseStatus === 'closed' || caseStatus === 'rejected'}
+                                                                            title="Aprobar Ítem"
+                                                                        >
+                                                                            <CheckCircle2 className="h-5 w-5" />
+                                                                        </Button>
+                                                                        <Button
+                                                                            size="icon"
+                                                                            variant={item.status === 'rejected' ? 'destructive' : 'outline'}
+                                                                            className={`h-9 w-9 rounded-full ${item.status === 'rejected' ? '' : 'text-slate-400 hover:text-red-500 hover:border-red-200'}`}
+                                                                            onClick={() => handleStatusChange(idx, 'rejected')}
+                                                                            disabled={caseStatus === 'closed' || caseStatus === 'rejected'}
+                                                                            title="Rechazar Ítem"
+                                                                        >
+                                                                            <XCircle className="h-5 w-5" />
+                                                                        </Button>
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
@@ -267,19 +331,26 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                     </div>
 
                                     {/* Footer con Botón Final */}
-                                    <div className="p-6 bg-slate-50 dark:bg-neutral-950 border-t flex flex-col md:flex-row justify-between items-center gap-4">
-                                        <div className="text-xs text-slate-500 max-w-sm">
-                                            * Al finalizar, el caso cambiará de estatus automáticamente según los ítems aprobados.
+                                    {caseStatus !== 'closed' && caseStatus !== 'rejected' && (
+                                        <div className="p-6 bg-slate-50 dark:bg-neutral-950 border-t flex flex-col md:flex-row justify-between items-center gap-4">
+                                            <div className="text-xs text-slate-500 max-w-sm">
+                                                * Al finalizar, el caso cambiará de estatus automáticamente según los ítems aprobados.
+                                            </div>
+                                            <Button
+                                                size="lg"
+                                                onClick={submitReview}
+                                                disabled={processing}
+                                                className="bg-purple-700 hover:bg-purple-800 text-white shadow-md w-full md:w-auto"
+                                            >
+                                                {processing ? 'Procesando...' : <><Save className="mr-2 h-4 w-4" /> Finalizar Revisión</>}
+                                            </Button>
                                         </div>
-                                        <Button
-                                            size="lg"
-                                            onClick={submitReview}
-                                            disabled={processing || socialCase.status === 'closed'}
-                                            className="bg-purple-700 hover:bg-purple-800 text-white shadow-md w-full md:w-auto"
-                                        >
-                                            {processing ? 'Procesando...' : <><Save className="mr-2 h-4 w-4" /> Finalizar Revisión</>}
-                                        </Button>
-                                    </div>
+                                    )}
+                                    {(caseStatus === 'closed' || caseStatus === 'rejected') && (
+                                        <div className="p-6 bg-slate-50 dark:bg-neutral-950 border-t text-center text-sm text-gray-500">
+                                            Este caso ha sido finalizado ({caseStatus === 'closed' ? 'Cerrado' : 'Rechazado'}). No se pueden realizar más cambios.
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
                         ) : (
@@ -288,6 +359,23 @@ export default function Review({ socialCase, specialists, can }: Props) {
                             </div>
                         )}
                     </div>
+                </div>
+
+                {/* SECCIÓN DE ARCHIVOS ADJUNTOS - Ancho completo abajo */}
+                <div className="mt-6">
+                    <CaseAttachments
+                        caseId={socialCase.id}
+                        initialAttachments={socialCase.media?.filter((m: any) => m.collection_name === 'attachments').map((m: any) => ({
+                            id: m.id,
+                            name: m.file_name,
+                            url: m.original_url || `/storage/${m.id}/${m.file_name}`,
+                            size: m.size,
+                            description: m.custom_properties?.description || '',
+                            mime_type: m.mime_type
+                        })) || []}
+                        canUpload={caseStatus !== 'closed'}
+                        canDelete={caseStatus !== 'closed'}
+                    />
                 </div>
             </div>
         </AppLayout>

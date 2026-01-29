@@ -34,6 +34,7 @@ class CaseController extends Controller
     {
         $term = $request->input('query');
         $type = $request->input('type');
+        $subcategoryId = $request->input('subcategory_id'); // Nuevo: filtrar por subcategoría
         
         if (!$term || strlen($term) < 2) return [];
         
@@ -41,10 +42,16 @@ class CaseController extends Controller
         $termRaw = strtolower($term);
 
         if ($type === 'supply') {
-            // ... (Lógica de insumos se mantiene igual) ...
-            return Supply::where('name', 'ILIKE', "%{$term}%")
-                ->where('status', 'active')
-                ->limit(15)->get()
+            // Buscar insumos filtrando por subcategoría (category_id del insumo)
+            $query = Supply::where('name', 'ILIKE', "%{$term}%")
+                ->where('status', 'active');
+            
+            // Filtrar por subcategoría si se proporciona
+            if ($subcategoryId) {
+                $query->where('category_id', $subcategoryId);
+            }
+            
+            return $query->limit(15)->get()
                 ->map(fn($item) => [
                     'id' => $item->id, // ID Real
                     'unique_id' => 'sup_'.$item->id, // ID Único para React
@@ -119,7 +126,9 @@ class CaseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'citizen_id' => 'required|exists:citizens,id',
+            'citizen_id' => 'required|exists:citizens,id', // Mantener por compatibilidad
+            'applicant_id' => 'nullable|exists:citizens,id', // Solicitante (quien pide la ayuda)
+            'beneficiary_id' => 'nullable|exists:citizens,id', // Beneficiario (quien recibe la ayuda)
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
             'channel' => 'required|string',
@@ -129,21 +138,44 @@ class CaseController extends Controller
             'items.*.type' => 'required|in:supply,service',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
-        $activeCase = SocialCase::where('citizen_id', $request->citizen_id)
-        ->where('category_id', $request->category_id)
-        ->whereIn('status', ['open', 'in_progress'])
-        ->first();
+
+        // Determinar solicitante y beneficiario
+        // Si no se especifica, citizen_id es tanto solicitante como beneficiario
+        $applicantId = $request->applicant_id ?? $request->citizen_id;
+        $beneficiaryId = $request->beneficiary_id ?? $request->citizen_id;
+
+        // Validar perfil del BENEFICIARIO (quien recibe la ayuda)
+        $beneficiary = Citizen::with('healthProfile')->findOrFail($beneficiaryId);
+        $profileService = new \App\Services\ProfileValidationService();
+        $profileErrors = $profileService->validateForCaseCreation($beneficiary);
+        
+        if (!empty($profileErrors)) {
+            return response()->json([
+                'message' => 'El perfil del beneficiario está incompleto',
+                'errors' => $profileErrors,
+                'missing_sections' => $profileService->getProfileStatus($beneficiary)['missing_sections']
+            ], 422);
+        }
+
+        // Verificar caso activo para el BENEFICIARIO (no el solicitante)
+        $activeCase = SocialCase::where('beneficiary_id', $beneficiaryId)
+            ->where('category_id', $request->category_id)
+            ->whereIn('status', ['open', 'in_progress'])
+            ->first();
 
         if ($activeCase) {
             return response()->json([
-                'message' => "El ciudadano ya tiene un caso activo (Folio: {$activeCase->case_number}). Debe cerrar ese caso antes de abrir uno nuevo."
+                'message' => "El beneficiario ya tiene un caso activo en esta categoría (Folio: {$activeCase->case_number}). Debe cerrar ese caso antes de abrir uno nuevo."
             ], 422); 
         }
-        return DB::transaction(function () use ($request) {
-            // 1. Crear Cabecera del Caso
+
+        return DB::transaction(function () use ($request, $applicantId, $beneficiaryId) {
+            // 1. Crear Cabecera del Caso con applicant y beneficiary
             $socialCase = SocialCase::create([
-                'case_number' => 'AYU-' . date('Y') . '-' . Str::upper(Str::random(6)), // Generar folio
-                'citizen_id' => $request->citizen_id,
+                'case_number' => 'AYU-' . date('Y') . '-' . Str::upper(Str::random(6)),
+                'citizen_id' => $beneficiaryId, // Mantener citizen_id para compatibilidad
+                'applicant_id' => $applicantId,
+                'beneficiary_id' => $beneficiaryId,
                 'user_id' => auth()->id(),
                 'category_id' => $request->category_id,
                 'subcategory_id' => $request->subcategory_id,
@@ -180,7 +212,8 @@ class CaseController extends Controller
             'creator',        
             'category',
             'subcategory',
-            'assignee'
+            'assignee',
+            'media' // Cargar archivos adjuntos
         ])->findOrFail($id);
 
         $specialists = User::permission('review cases')
@@ -294,6 +327,118 @@ class CaseController extends Controller
         return Inertia::render('cases/index', [
             'cases' => $cases,
             'filters' => $request->only(['search', 'status'])
+        ]);
+    }
+
+    /**
+     * Upload attachment to a case (max 2MB per file)
+     */
+    public function uploadAttachment(Request $request, $id)
+    {
+        $request->validate([
+            'file' => 'required|file|max:2048', // 2MB max
+            'description' => 'nullable|string|max:255'
+        ], [
+            'file.required' => 'Debe seleccionar un archivo',
+            'file.max' => 'El archivo no puede superar los 2MB'
+        ]);
+
+        $case = SocialCase::findOrFail($id);
+        
+        $media = $case->addMediaFromRequest('file')
+            ->withCustomProperties(['description' => $request->description ?? ''])
+            ->toMediaCollection('attachments');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Archivo adjuntado correctamente',
+            'attachment' => [
+                'id' => $media->id,
+                'name' => $media->file_name,
+                'url' => $media->getUrl(),
+                'size' => $media->size,
+                'description' => $request->description ?? ''
+            ]
+        ]);
+    }
+
+    /**
+     * Delete attachment from a case
+     */
+    public function deleteAttachment($caseId, $mediaId)
+    {
+        $case = SocialCase::findOrFail($caseId);
+        $media = $case->media()->findOrFail($mediaId);
+        
+        $media->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Archivo eliminado correctamente'
+        ]);
+    }
+
+    /**
+     * Download attachment from a case
+     */
+    public function downloadAttachment($caseId, $mediaId)
+    {
+        $case = SocialCase::findOrFail($caseId);
+        $media = $case->media()->findOrFail($mediaId);
+        
+        return response()->download($media->getPath(), $media->file_name);
+    }
+
+    /**
+     * Mark an approved item as fulfilled (delivered/completed)
+     */
+    public function fulfillItem(Request $request, $caseId, $itemId)
+    {
+        if (!auth()->user()->can('review cases')) {
+            abort(403, 'No tiene permiso para marcar ítems como cumplidos.');
+        }
+
+        $case = SocialCase::findOrFail($caseId);
+        $item = $case->items()->findOrFail($itemId);
+
+        // Solo se pueden cumplir ítems aprobados
+        if ($item->status !== 'approved') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solo se pueden marcar como cumplidos los ítems aprobados.'
+            ], 422);
+        }
+
+        $item->update([
+            'status' => 'fulfilled',
+            'fulfilled_at' => now(),
+            'fulfilled_by' => auth()->id()
+        ]);
+
+        // Verificar si todos los ítems están finalizados (fulfilled o rejected)
+        $allItems = $case->items()->get();
+        $allCompleted = $allItems->every(function ($i) {
+            return in_array($i->status, ['fulfilled', 'rejected']);
+        });
+
+        $newCaseStatus = null;
+        if ($allCompleted) {
+            // Si hay al menos un ítem fulfilled, el caso está cerrado/completado
+            // Si todos están rejected, el caso está rechazado
+            $anyFulfilled = $allItems->contains('status', 'fulfilled');
+            $newCaseStatus = $anyFulfilled ? 'closed' : 'rejected';
+            
+            $case->update(['status' => $newCaseStatus]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $allCompleted 
+                ? 'Ítem marcado como cumplido. Caso ' . ($newCaseStatus === 'closed' ? 'cerrado' : 'rechazado') . '.'
+                : 'Ítem marcado como cumplido.',
+            'item' => $item->fresh(['fulfilledBy']),
+            'case_status' => $case->fresh()->status,
+            'case_closed' => $allCompleted
         ]);
     }
 }

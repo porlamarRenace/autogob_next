@@ -31,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
             'supply' => 'App\Models\Supply',
             'service' => 'App\Models\MedicalService',
             'user' => User::class,
+            'citizen' => 'App\Models\Citizen',
+            'social_case' => 'App\Models\SocialCase',
         ]);
     }
 

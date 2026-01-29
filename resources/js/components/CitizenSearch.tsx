@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Search, Loader2, AlertCircle } from 'lucide-react';
+import { Search, Loader2, AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Citizen } from '@/types/models';
+import Swal from 'sweetalert2';
 
 interface Props {
-    onCitizenFound: (citizen: Citizen) => void;
+    onCitizenFound: (citizen: Citizen, extraData?: any) => void;
     onReset: () => void;
     onNotFound: (identification_value: string, nationality: string) => void;
 }
@@ -36,20 +37,70 @@ export default function CitizenSearch({ onCitizenFound, onReset, onNotFound }: P
                 return;
             }
 
+            const data = response.data;
+
             // Validación de caso activo
-            if (response.data.active_case) {
-                setError(`El ciudadano ya tiene un caso activo: ${response.data.active_case.category.name}`);
+            if (data.active_case) {
+                setError(`El ciudadano ya tiene un caso activo: ${data.active_case.category.name}`);
+            }
+
+            // ALERTA: Ciudadano creado desde sistema externo
+            if (data.was_created) {
+                await Swal.fire({
+                    icon: 'info',
+                    title: 'Nuevo Ciudadano Registrado',
+                    text: 'Este ciudadano fue registrado automáticamente desde el sistema externo. Por favor complete los datos faltantes antes de crear un caso.',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+
+            // ALERTA: Perfil incompleto
+            if (!data.profile_complete && !data.was_created) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Perfil Incompleto',
+                    html: `
+                        <p class="mb-2">El ciudadano tiene información faltante:</p>
+                        <ul class="text-left text-sm list-disc ml-6">
+                            ${data.profile_errors?.map((err: string) => `<li>${err}</li>`).join('') || ''}
+                        </ul>
+                        <p class="mt-3 font-semibold">Complete los datos antes de crear un caso.</p>
+                    `,
+                    confirmButtonText: 'Ir a Completar Datos'
+                });
             }
 
             onCitizenFound({
-                ...response.data.citizen,
-                history: response.data.history // <--- INYECTAMOS EL HISTORIAL QUE VIENE DE SEARCHAPI
+                ...data.citizen,
+                history: data.history
+            }, {
+                profile_complete: data.profile_complete,
+                profile_errors: data.profile_errors,
+                missing_sections: data.missing_sections,
+                was_created: data.was_created,
+                source: data.source
             });
 
         } catch (err: any) {
             // CASO 2: El backend devuelve 404 (Lo estándar)
             if (err.response && err.response.status === 404) {
-                if (onNotFound) {
+                // Mostrar mensaje de que no se encontró en ningún sistema
+                const message = err.response.data?.message || 'Ciudadano no encontrado';
+
+                if (err.response.data?.source === 'none') {
+                    Swal.fire({
+                        icon: 'question',
+                        title: 'Ciudadano No Encontrado',
+                        text: 'No se encontró en la base de datos local ni en el sistema externo. ¿Desea registrarlo manualmente?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, Registrar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed && onNotFound) {
+                            onNotFound(identificationValue, nationality);
+                        }
+                    });
+                } else if (onNotFound) {
                     onNotFound(identificationValue, nationality);
                 } else {
                     setError('Ciudadano no encontrado y no se ha definido acción de registro.');

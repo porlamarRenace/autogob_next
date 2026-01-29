@@ -75,11 +75,13 @@ export default function UserForm({ user, roles }: Props) {
                                         <SelectValue placeholder="Seleccione un rol" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {roles.map((r) => (
-                                            <SelectItem key={r.id} value={r.id.toString()}>
-                                                {r.name.toUpperCase().replace('_', ' ')}
-                                            </SelectItem>
-                                        ))}
+                                        {roles
+                                            .filter((r) => r.name.toLowerCase() !== 'super_admin')
+                                            .map((r) => (
+                                                <SelectItem key={r.id} value={r.id.toString()}>
+                                                    {r.name.toUpperCase().replace('_', ' ')}
+                                                </SelectItem>
+                                            ))}
                                     </SelectContent>
                                 </Select>
                                 {errors.role_id && <span className="text-red-500 text-xs">{errors.role_id}</span>}

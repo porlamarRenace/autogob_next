@@ -5,14 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
-class SocialCase extends Model
+class SocialCase extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia, LogsActivity;
+
+    /**
+     * Activity log configuration
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'assigned_to', 'category_id', 'subcategory_id', 'description'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Caso {$this->case_number} {$eventName}");
+    }
 
     protected $fillable = [
         'case_number',
         'citizen_id',
+        'applicant_id',
+        'beneficiary_id',
         'user_id',
         'assigned_to',
         'category_id',
@@ -22,10 +41,49 @@ class SocialCase extends Model
         'status',
     ];
 
+    /**
+     * Register media collections for case attachments (multiple files)
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('attachments')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
+    }
+
+    /**
+     * Register media conversions (thumbnail for images)
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(200)
+            ->height(200);
+    }
+
+    /**
+     * Ciudadano principal (compatibilidad legacy)
+     */
     public function citizen() 
     {
         return $this->belongsTo(Citizen::class); 
     }
+
+    /**
+     * Solicitante: persona que realiza la solicitud
+     */
+    public function applicant()
+    {
+        return $this->belongsTo(Citizen::class, 'applicant_id');
+    }
+
+    /**
+     * Beneficiario: persona que recibe la ayuda
+     */
+    public function beneficiary()
+    {
+        return $this->belongsTo(Citizen::class, 'beneficiary_id');
+    }
+
     public function creator() 
     { 
         return $this->belongsTo(User::class, 'user_id'); 
