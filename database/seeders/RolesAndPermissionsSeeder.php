@@ -31,6 +31,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'assign cases',    // Asignar a especialistas
             'review cases',    // Auditar/Aprobar/Rechazar ítems
             
+            // Stock y Reportes
+            'manage stock',
+            'view reports',
+            
             // Administración
             'manage users',    // Crear otros usuarios
             'manage roles',
@@ -63,7 +67,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'view cases', 
             'assign cases', 
             'review cases',
-            'view dashboard'
+            'view dashboard',
+            'manage stock',
+            'view reports'
         ]);
 
         // 5. Crear Usuario Super Admin por defecto

@@ -415,6 +415,22 @@ class CaseController extends Controller
             'fulfilled_by' => auth()->id()
         ]);
 
+        // Si el ítem es un insumo (Supply), descontar del stock
+        if ($item->itemable_type === 'supply' && $item->itemable) {
+            $supply = $item->itemable;
+            $quantityToDeduct = $item->approved_quantity ?? $item->quantity;
+            
+            if ($supply->current_stock >= $quantityToDeduct) {
+                $supply->removeStock(
+                    $quantityToDeduct,
+                    'delivery',
+                    auth()->id(),
+                    "Entrega para caso #{$case->case_number}",
+                    $item
+                );
+            }
+        }
+
         // Verificar si todos los ítems están finalizados (fulfilled o rejected)
         $allItems = $case->items()->get();
         $allCompleted = $allItems->every(function ($i) {

@@ -57,12 +57,13 @@ export default function Profile({
 
                                     <Input
                                         id="name"
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full bg-slate-100 dark:bg-neutral-800 text-slate-500"
                                         defaultValue={auth.user.name}
                                         name="name"
                                         required
                                         autoComplete="name"
                                         placeholder="Full name"
+                                        disabled
                                     />
 
                                     <InputError
@@ -77,12 +78,13 @@ export default function Profile({
                                     <Input
                                         id="email"
                                         type="email"
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full bg-slate-100 dark:bg-neutral-800 text-slate-500"
                                         defaultValue={auth.user.email}
                                         name="email"
                                         required
                                         autoComplete="username"
                                         placeholder="Dirección de correo electrónico"
+                                        disabled
                                     />
 
                                     <InputError
@@ -91,48 +93,8 @@ export default function Profile({
                                     />
                                 </div>
 
-                                {mustVerifyEmail &&
-                                    auth.user.email_verified_at === null && (
-                                        <div>
-                                            <p className="-mt-4 text-sm text-muted-foreground">
-                                                Su dirección de correo electrónico no ha sido verificada.{' '}
-                                                <Link
-                                                    href={send()}
-                                                    as="button"
-                                                    className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                                >
-                                                    Haga clic aquí para reenviar el correo de verificación.
-                                                </Link>
-                                            </p>
-
-                                            {status ===
-                                                'verification-link-sent' && (
-                                                    <div className="mt-2 text-sm font-medium text-green-600">
-                                                        Un nuevo enlace de verificación ha sido enviado a su dirección de correo electrónico.
-                                                    </div>
-                                                )}
-                                        </div>
-                                    )}
-
-                                <div className="flex items-center gap-4">
-                                    <Button
-                                        disabled={processing}
-                                        data-test="update-profile-button"
-                                    >
-                                        Guardar
-                                    </Button>
-
-                                    <Transition
-                                        show={recentlySuccessful}
-                                        enter="transition ease-in-out"
-                                        enterFrom="opacity-0"
-                                        leave="transition ease-in-out"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <p className="text-sm text-neutral-600">
-                                            Guardado
-                                        </p>
-                                    </Transition>
+                                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-md text-sm">
+                                    Para modificar sus datos personales, contacte al administrador del sistema.
                                 </div>
                             </>
                         )}

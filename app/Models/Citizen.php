@@ -124,11 +124,27 @@ class Citizen extends Model implements HasMedia
     }
 
     /**
-     * Relationship: Cases associated with this citizen
+     * Relationship: Cases associated with this citizen (legacy)
      */
     public function cases()
     {
         return $this->hasMany(SocialCase::class);
+    }
+
+    /**
+     * Relationship: Cases where this citizen is the applicant
+     */
+    public function applicantCases()
+    {
+        return $this->hasMany(SocialCase::class, 'applicant_id');
+    }
+
+    /**
+     * Relationship: Cases where this citizen is the beneficiary
+     */
+    public function beneficiaryCases()
+    {
+        return $this->hasMany(SocialCase::class, 'beneficiary_id');
     }
 
     /**

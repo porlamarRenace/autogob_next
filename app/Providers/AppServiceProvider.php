@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
             'citizen' => 'App\Models\Citizen',
             'social_case' => 'App\Models\SocialCase',
             'category' => 'App\Models\Category',
+            'case_item' => 'App\Models\CaseItem',
+            'stock_movement' => 'App\Models\StockMovement',
         ]);
     }
 

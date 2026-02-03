@@ -388,6 +388,43 @@ class CitizenController extends Controller
     }
 
     /**
+     * Show citizen expedient (history)
+     */
+    public function expedient(Citizen $citizen)
+    {
+        $citizen->load(['street.community.municipality.state', 'healthProfile', 'representative']);
+
+        // Casos como beneficiario (ayudas recibidas)
+        $beneficiaryCases = $citizen->beneficiaryCases()
+            ->with(['items.itemable', 'category', 'subcategory'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Casos como solicitante (gestiones realizadas)
+        $applicantCases = $citizen->applicantCases()
+            ->with(['category', 'subcategory', 'beneficiary'])
+            ->where('applicant_id', '!=', $citizen->id) // Excluir donde es el mismo beneficiario (ya sale arriba)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Estadísticas
+        $stats = [
+            'total_cases_beneficiary' => $beneficiaryCases->count(),
+            'total_cases_applicant' => $applicantCases->count(),
+            'approved_items' => $beneficiaryCases->pluck('items')->flatten()->where('status', 'approved')->count(),
+            'fulfilled_items' => $beneficiaryCases->pluck('items')->flatten()->where('status', 'fulfilled')->count(),
+            'rejected_items' => $beneficiaryCases->pluck('items')->flatten()->where('status', 'rejected')->count(),
+        ];
+
+        return Inertia::render('citizens/expedient', [
+            'citizen' => $citizen,
+            'beneficiary_cases' => $beneficiaryCases,
+            'applicant_cases' => $applicantCases,
+            'stats' => $stats
+        ]);
+    }
+
+    /**
      * Lookup person by cedula - first locally, then external API
      */
     public function lookupExternal(Request $request)

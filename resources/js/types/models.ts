@@ -21,6 +21,7 @@ export interface Citizen {
     reference_point?: string;
     street_id?: number;
     photo?: string;
+    photo_url?: string | null;
     representative_id?: number;
     representative?: Citizen;
     social_data?: Record<string, any>;

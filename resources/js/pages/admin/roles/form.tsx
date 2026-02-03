@@ -81,8 +81,8 @@ export default function RoleForm({ role, groupedPermissions, currentPermissions 
                         <CardContent>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {Object.keys(groupedPermissions).map((group) => (
-                                    <div key={group} className="border rounded-lg p-4 bg-slate-50">
-                                        <h3 className="font-bold text-slate-700 mb-3 uppercase text-sm border-b pb-1">
+                                    <div key={group} className="border rounded-lg p-4 bg-slate-50 dark:bg-neutral-900 dark:border-neutral-800">
+                                        <h3 className="font-bold text-slate-700 dark:text-slate-300 mb-3 uppercase text-sm border-b dark:border-neutral-700 pb-1">
                                             Módulo: {group}
                                         </h3>
                                         <div className="space-y-3">
@@ -95,7 +95,7 @@ export default function RoleForm({ role, groupedPermissions, currentPermissions 
                                                     />
                                                     <label
                                                         htmlFor={`perm_${perm.id}`}
-                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-slate-700 dark:text-slate-300"
                                                     >
                                                         {perm.name}
                                                     </label>

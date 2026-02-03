@@ -97,6 +97,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/api/citizens/{id}/photo', [CitizenController::class, 'deletePhoto'])->name('citizens.delete-photo');
     Route::get('/api/citizens/{id}/profile-status', [CitizenController::class, 'getProfileStatus'])->name('citizens.profile-status');
     
+    // Expediente del ciudadano (Historial)
+    Route::get('/citizens/{citizen}/expedient', [CitizenController::class, 'expedient'])->name('citizens.expedient');
+    
     // External person lookup (searches local first, then external API)
     Route::post('/api/citizens/lookup', [CitizenController::class, 'lookupExternal'])->name('citizens.lookup-external');
 
@@ -124,6 +127,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('categories',CategoryController::class);
         Route::resource('supplies', SupplyController::class);
         Route::resource('services', MedicalServiceController::class);
+        
+        // Stock management
+        Route::get('stock', [\App\Http\Controllers\Admin\StockController::class, 'index'])->name('stock.index');
+        Route::get('stock/{supply}/movements', [\App\Http\Controllers\Admin\StockController::class, 'movements'])->name('stock.movements');
+        Route::post('stock/entry', [\App\Http\Controllers\Admin\StockController::class, 'entry'])->name('stock.entry');
+        Route::post('stock/exit', [\App\Http\Controllers\Admin\StockController::class, 'exit'])->name('stock.exit');
+        Route::get('stock/{supply}/recent', [\App\Http\Controllers\Admin\StockController::class, 'recentMovements'])->name('stock.recent');
+
+        // Reports
+        Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/case/{case}/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'caseDetail'])->name('reports.case.pdf');
+        Route::get('reports/citizen/{citizen}/expedient-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'citizenExpedient'])->name('reports.citizen.pdf');
+        Route::get('reports/approved-aids', [\App\Http\Controllers\Admin\ReportController::class, 'approvedAids'])->name('reports.approved-aids');
     });
 });
 

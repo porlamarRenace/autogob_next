@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CheckCircle2, XCircle, FileText, User, UserPlus, Save, ArrowLeft, ShieldAlert, Gift } from 'lucide-react';
+import { CheckCircle2, XCircle, FileText, User, UserPlus, Save, ArrowLeft, ShieldAlert, Gift, Download } from 'lucide-react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import CaseAttachments from '@/components/CaseAttachments';
@@ -156,9 +156,16 @@ export default function Review({ socialCase, specialists, can }: Props) {
                             <span>Estado Actual: <Badge variant="outline">{socialCase.status.toUpperCase().replace('_', ' ')}</Badge></span>
                         </div>
                     </div>
-                    <Button variant="outline" onClick={() => window.history.back()}>
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Volver a la bandeja
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" asChild>
+                            <a href={route('reports.case.pdf', socialCase.id)} target="_blank" rel="noopener noreferrer">
+                                <Download className="mr-2 h-4 w-4" /> Descargar PDF
+                            </a>
+                        </Button>
+                        <Button variant="outline" onClick={() => window.history.back()}>
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Volver a la bandeja
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -14,7 +14,7 @@ class Supply extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'unit', 'concentration', 'status', 'category_id'])
+            ->logOnly(['name', 'unit', 'concentration', 'status', 'category_id', 'current_stock', 'min_stock'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "Insumo {$eventName}");
     }
@@ -24,11 +24,56 @@ class Supply extends Model
         'name',
         'unit',
         'concentration',
-        'status'
+        'status',
+        'current_stock',
+        'min_stock',
     ];
+
+    protected $appends = ['is_low_stock'];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function movements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    // Helpers
+    public function getIsLowStockAttribute(): bool
+    {
+        return $this->current_stock <= $this->min_stock;
+    }
+
+    public function addStock(int $quantity, string $reason, ?int $userId = null, ?string $notes = null, $reference = null): StockMovement
+    {
+        $this->increment('current_stock', $quantity);
+
+        return $this->movements()->create([
+            'type' => 'entry',
+            'quantity' => $quantity,
+            'reason' => $reason,
+            'notes' => $notes,
+            'user_id' => $userId ?? auth()->id(),
+            'reference_type' => $reference ? get_class($reference) : null,
+            'reference_id' => $reference?->id,
+        ]);
+    }
+
+    public function removeStock(int $quantity, string $reason, ?int $userId = null, ?string $notes = null, $reference = null): StockMovement
+    {
+        $this->decrement('current_stock', $quantity);
+
+        return $this->movements()->create([
+            'type' => 'exit',
+            'quantity' => $quantity,
+            'reason' => $reason,
+            'notes' => $notes,
+            'user_id' => $userId ?? auth()->id(),
+            'reference_type' => $reference ? get_class($reference) : null,
+            'reference_id' => $reference?->id,
+        ]);
     }
 }
