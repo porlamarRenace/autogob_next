@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
             'user' => User::class,
             'citizen' => 'App\Models\Citizen',
             'social_case' => 'App\Models\SocialCase',
+            'category' => 'App\Models\Category',
         ]);
     }
 

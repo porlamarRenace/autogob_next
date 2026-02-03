@@ -1,24 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // <--- 1. IMPORTAR SELECT
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Plus, Pencil, Trash2, Pill, Search } from 'lucide-react';
 import Swal from 'sweetalert2';
 import PaginationLinks from '@/components/ui/pagination-links';
 import { useDebounce } from '@/hooks/useDebounce';
 
-export default function SuppliesManager({ supplies, filters, categories }: any) {
+export default function SuppliesManager({ supplies, filters, parentCategories }: any) {
     const [search, setSearch] = useState(filters.search || '');
     const debouncedSearch = useDebounce(search, 300);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any>(null);
 
+    // Estado para categoría padre seleccionada (para filtrar subcategorías)
+    const [selectedParentId, setSelectedParentId] = useState<string>('');
 
     useEffect(() => {
         router.get(route('supplies.index'), { search: debouncedSearch }, { preserveState: true, replace: true });
@@ -28,37 +30,79 @@ export default function SuppliesManager({ supplies, filters, categories }: any) 
         name: '',
         concentration: '',
         unit: 'Unidad',
-        category_id: '' // <--- Nuevo campo
+        category_id: '' // Este es el ID de la subcategoría
     });
+
+    // Subcategorías filtradas por categoría padre seleccionada
+    const filteredSubcategories = useMemo(() => {
+        if (!selectedParentId) return [];
+        const parent = parentCategories.find((p: any) => p.id.toString() === selectedParentId);
+        return parent?.children || [];
+    }, [selectedParentId, parentCategories]);
 
     const openModal = (item?: any) => {
         if (item) {
             setEditingItem(item);
-            setData({
-                name: item.name,
-                concentration: item.concentration || '',
-                unit: item.unit,
-                category_id: item.category_id?.toString() || '' // <--- Cargar ID al editar
-            });
+            // Al editar, necesitamos encontrar la categoría padre de la subcategoría
+            const parentId = item.category?.parent_id?.toString() || item.category?.id?.toString() || '';
+            const categoryId = item.category_id?.toString() || '';
+
+            // Si la categoría del item no tiene parent_id, es una categoría padre (sin subcategoría)
+            if (item.category && !item.category.parent_id) {
+                setSelectedParentId(categoryId);
+                setData({
+                    name: item.name,
+                    concentration: item.concentration || '',
+                    unit: item.unit,
+                    category_id: '' // No hay subcategoría, solo padre
+                });
+            } else {
+                setSelectedParentId(parentId);
+                setData({
+                    name: item.name,
+                    concentration: item.concentration || '',
+                    unit: item.unit,
+                    category_id: categoryId
+                });
+            }
         } else {
             setEditingItem(null);
+            setSelectedParentId('');
             reset();
-            setData('category_id', ''); // <--- Limpiar al crear
+            setData('category_id', '');
         }
         setIsModalOpen(true);
     };
 
+    const handleParentChange = (parentId: string) => {
+        setSelectedParentId(parentId);
+        setData('category_id', ''); // Limpiar subcategoría al cambiar padre
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Si no hay subcategoría seleccionada pero hay categoría padre, usar el padre
+        // Si es "_none", usar el padre
+        const finalCategoryId = data.category_id === '_none' || !data.category_id
+            ? selectedParentId
+            : data.category_id;
+
+        // Actualizar data antes de enviar
+        setData('category_id', finalCategoryId);
+
         const action = editingItem ? put : post;
         const url = editingItem ? route('supplies.update', editingItem.id) : route('supplies.store');
 
-        action(url, {
-            onSuccess: () => {
-                setIsModalOpen(false);
-                Swal.fire('Guardado', 'Insumo guardado correctamente', 'success');
-            }
-        });
+        // Usar setTimeout para dar tiempo a React a actualizar el estado
+        setTimeout(() => {
+            action(url, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    Swal.fire('Guardado', 'Insumo guardado correctamente', 'success');
+                }
+            });
+        }, 0);
     };
 
     const handleDelete = (id: number) => {
@@ -92,7 +136,7 @@ export default function SuppliesManager({ supplies, filters, categories }: any) 
                             <TableHeader className="bg-slate-50 dark:bg-neutral-800">
                                 <TableRow>
                                     <TableHead>Nombre Comercial</TableHead>
-                                    <TableHead>Categoría</TableHead> {/* <--- Columna Nueva */}
+                                    <TableHead>Categoría</TableHead>
                                     <TableHead>Concentración</TableHead>
                                     <TableHead>Presentación</TableHead>
                                     <TableHead className="text-right">Acciones</TableHead>
@@ -104,18 +148,20 @@ export default function SuppliesManager({ supplies, filters, categories }: any) 
                                 ) : supplies.data.map((sup: any) => (
                                     <TableRow key={sup.id}>
                                         <TableCell className="font-medium">{sup.name}</TableCell>
-
-                                        {/* MOSTRAR CATEGORÍA EN LA TABLA */}
                                         <TableCell>
                                             {sup.category ? (
-                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                                                    {sup.category.name}
-                                                </span>
+                                                <div className="flex flex-col gap-0.5">
+                                                    {sup.category.parent && (
+                                                        <span className="text-xs text-slate-400">{sup.category.parent.name}</span>
+                                                    )}
+                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                        {sup.category.name}
+                                                    </span>
+                                                </div>
                                             ) : (
                                                 <span className="text-slate-400 text-xs">-</span>
                                             )}
                                         </TableCell>
-
                                         <TableCell>{sup.concentration || '-'}</TableCell>
                                         <TableCell><span className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs border">{sup.unit}</span></TableCell>
                                         <TableCell className="text-right">
@@ -132,32 +178,59 @@ export default function SuppliesManager({ supplies, filters, categories }: any) 
 
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                     <DialogContent>
-                        <DialogHeader><DialogTitle>{editingItem ? 'Editar Insumo' : 'Nuevo Insumo'}</DialogTitle></DialogHeader>
+                        <DialogHeader>
+                            <DialogTitle>{editingItem ? 'Editar Insumo' : 'Nuevo Insumo'}</DialogTitle>
+                            <DialogDescription>Complete los campos para {editingItem ? 'actualizar el' : 'registrar un nuevo'} insumo.</DialogDescription>
+                        </DialogHeader>
                         <form onSubmit={handleSubmit} className="space-y-4">
 
-                            {/* 3. SELECTOR DE CATEGORÍA */}
+                            {/* SELECTOR DE CATEGORÍA PADRE */}
                             <div>
-                                <Label>Categoría</Label>
+                                <Label>Categoría Principal *</Label>
                                 <Select
-                                    value={data.category_id}
-                                    onValueChange={(val) => setData('category_id', val)}
+                                    value={selectedParentId}
+                                    onValueChange={handleParentChange}
                                 >
                                     <SelectTrigger className="mt-1">
-                                        <SelectValue placeholder="Seleccione una categoría..." />
+                                        <SelectValue placeholder="Seleccione categoría..." />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {categories.map((cat: any) => (
+                                        {parentCategories.map((cat: any) => (
                                             <SelectItem key={cat.id} value={cat.id.toString()}>
                                                 {cat.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                {errors.category_id && <span className="text-red-500 text-xs">{errors.category_id}</span>}
                             </div>
 
+                            {/* SELECTOR DE SUBCATEGORÍA (solo si hay subcategorías) */}
+                            {filteredSubcategories.length > 0 && (
+                                <div>
+                                    <Label>Subcategoría</Label>
+                                    <Select
+                                        value={data.category_id}
+                                        onValueChange={(val) => setData('category_id', val)}
+                                    >
+                                        <SelectTrigger className="mt-1">
+                                            <SelectValue placeholder="Seleccione subcategoría (opcional)..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="_none">-- Sin subcategoría --</SelectItem>
+                                            {filteredSubcategories.map((sub: any) => (
+                                                <SelectItem key={sub.id} value={sub.id.toString()}>
+                                                    {sub.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
+                            {errors.category_id && <span className="text-red-500 text-xs">{errors.category_id}</span>}
+
                             <div>
-                                <Label>Nombre</Label>
+                                <Label>Nombre *</Label>
                                 <Input value={data.name} onChange={e => setData('name', e.target.value)} required />
                                 {errors.name && <span className="text-red-500 text-xs">{errors.name}</span>}
                             </div>
@@ -168,14 +241,14 @@ export default function SuppliesManager({ supplies, filters, categories }: any) 
                                     <Input value={data.concentration} onChange={e => setData('concentration', e.target.value)} placeholder="Ej: 500mg" />
                                 </div>
                                 <div>
-                                    <Label>Unidad/Presentación</Label>
+                                    <Label>Unidad/Presentación *</Label>
                                     <Input value={data.unit} onChange={e => setData('unit', e.target.value)} placeholder="Ej: Caja, Blister" required />
                                     {errors.unit && <span className="text-red-500 text-xs">{errors.unit}</span>}
                                 </div>
                             </div>
 
                             <div className="flex justify-end pt-2">
-                                <Button type="submit" disabled={processing} className="bg-blue-600">Guardar</Button>
+                                <Button type="submit" disabled={processing || !selectedParentId} className="bg-blue-600">Guardar</Button>
                             </div>
                         </form>
                     </DialogContent>

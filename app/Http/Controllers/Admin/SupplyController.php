@@ -13,14 +13,14 @@ class SupplyController extends Controller
     public function index(Request $request)
     {
         $query = Supply::query()
-        ->with('category');
+        ->with('category.parent');
         if ($request->search) {
             $query->where('name', 'ILIKE', "%{$request->search}%");
         }
 
         return Inertia::render('admin/masters/supplies', [
             'supplies' => $query->orderBy('name')->paginate(10)->withQueryString(),
-            'categories' => Category::where('parent_id',null)->get(),
+            'parentCategories' => Category::whereNull('parent_id')->with('children')->get(),
             'filters' => $request->only(['search'])
         ]);
     }
