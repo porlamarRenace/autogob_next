@@ -19,7 +19,7 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 
 # Le damos permisos y ejecutamos la instalación de 'exif'
 RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions exif
+    install-php-extensions exif gd zip intl bcmath
 
 # Copiar archivos del proyecto
 COPY --chown=www-data:www-data . /var/www/html
