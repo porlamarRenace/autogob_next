@@ -42,16 +42,56 @@ export default function Review({ socialCase, specialists, can }: Props) {
         }))
     );
 
+    // Estado para items seleccionados (para asignación granular)
+    const [selectedItems, setSelectedItems] = useState<number[]>([]);
+
     // --- LÓGICA DE ASIGNACIÓN ---
     const handleAssign = () => {
         if (!selectedSpecialist) return Swal.fire('Error', 'Seleccione un especialista', 'warning');
 
-        router.put(route('cases.assign', socialCase.id), {
-            assigned_to: selectedSpecialist
-        }, {
-            onSuccess: () => Swal.fire('Asignado', 'El caso ha sido derivado.', 'success'),
-            preserveScroll: true
+        const isGranular = selectedItems.length > 0;
+        const confirmText = isGranular
+            ? `¿Asignar ${selectedItems.length} ítem(s) al especialista seleccionado?`
+            : '¿Asignar el caso completo al especialista?';
+
+        Swal.fire({
+            title: 'Confirmar Asignación',
+            text: confirmText,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, asignar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.put(route('cases.assign', socialCase.id), {
+                    assigned_to: selectedSpecialist,
+                    item_ids: isGranular ? selectedItems : null
+                }, {
+                    onSuccess: () => {
+                        Swal.fire('Asignado', 'La asignación se ha procesado correctamente.', 'success');
+                        setSelectedItems([]); // Limpiar selección
+                    },
+                    preserveScroll: true
+                });
+            }
         });
+    };
+
+    // Toggle selección de ítem
+    const toggleSelectItem = (itemId: number) => {
+        setSelectedItems(prev =>
+            prev.includes(itemId)
+                ? prev.filter(id => id !== itemId)
+                : [...prev, itemId]
+        );
+    };
+
+    // Toggle seleccionar todos
+    const toggleSelectAll = () => {
+        if (selectedItems.length === itemsReview.length) {
+            setSelectedItems([]);
+        } else {
+            setSelectedItems(itemsReview.map((i: any) => i.id));
+        }
     };
 
     // --- LÓGICA DE REVISIÓN ---
@@ -190,12 +230,18 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-base">
                                         <UserPlus className="h-5 w-5 text-orange-600" />
-                                        {socialCase.assigned_to ? 'Reasignar Caso' : 'Asignar Especialista'}
+                                        {socialCase.assigned_to
+                                            ? (selectedItems.length > 0 ? 'Asignar Ítems' : 'Reasignar Caso')
+                                            : (selectedItems.length > 0 ? 'Asignar Ítems' : 'Asignar Caso')
+                                        }
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="text-sm text-slate-500">
-                                        Si no desea decidir ahora, derive el caso a un especialista.
+                                        {selectedItems.length > 0
+                                            ? `Se asignarán ${selectedItems.length} ítem(s) seleccionados al usuario.`
+                                            : 'Se asignará TODO el caso al usuario (Cabecera).'
+                                        }
                                     </div>
                                     <div>
                                         <Label>Seleccionar Funcionario</Label>
@@ -215,10 +261,10 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                     <Button
                                         className="w-full bg-orange-600 hover:bg-orange-700"
                                         onClick={handleAssign}
-                                        disabled={!selectedSpecialist || selectedSpecialist === socialCase.assigned_to?.toString()}
+                                        disabled={!selectedSpecialist}
                                     >
                                         <Save className="mr-2 h-4 w-4" />
-                                        {socialCase.assigned_to ? 'Guardar Reasignación' : 'Asignar Caso'}
+                                        Guardar Asignación
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -234,7 +280,7 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                         <span>Decisión y Auditoría</span>
                                     </CardTitle>
                                     <p className="text-sm text-slate-500 font-normal mt-1">
-                                        Revise cada ítem solicitado. Puede aprobar cantidades parciales.
+                                        Revise cada ítem solicitado. Puede aprobar cantidades parciales y asignar ítems individualmente.
                                     </p>
                                 </CardHeader>
                                 <CardContent className="p-0">
@@ -242,6 +288,16 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
+                                                    {can.assign && (
+                                                        <TableHead className="w-10 text-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                                                checked={selectedItems.length === itemsReview.length && itemsReview.length > 0}
+                                                                onChange={toggleSelectAll}
+                                                            />
+                                                        </TableHead>
+                                                    )}
                                                     <TableHead className="pl-6">Descripción</TableHead>
                                                     <TableHead className="text-center">Solicitado</TableHead>
                                                     <TableHead className="text-center w-32">Aprobar</TableHead>
@@ -251,8 +307,21 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                             <TableBody>
                                                 {itemsReview.map((item: any, idx: number) => (
                                                     <TableRow key={item.id} className={item.status === 'rejected' ? 'bg-red-50/40 dark:bg-red-500/40' : item.status === 'approved' ? 'bg-green-50/40 dark:bg-green-500/40' : ''}>
+                                                        {can.assign && (
+                                                            <TableCell className="text-center align-top pt-4">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                                                    checked={selectedItems.includes(item.id)}
+                                                                    onChange={() => toggleSelectItem(item.id)}
+                                                                />
+                                                            </TableCell>
+                                                        )}
                                                         <TableCell className="pl-6 align-top pt-4">
                                                             <div className="font-medium text-slate-800 dark:text-slate-200">{item.name}</div>
+                                                            <div className="text-xs text-slate-500 mb-1">
+                                                                Asignado a: <span className="font-semibold">{socialCase.items.find((i: any) => i.id === item.id)?.assigned_to?.name || 'General'}</span>
+                                                            </div>
                                                             <Input
                                                                 placeholder="Nota (Ej: Sin stock)..."
                                                                 className="mt-2 h-7 text-xs border-slate-200"

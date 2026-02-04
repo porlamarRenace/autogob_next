@@ -32,7 +32,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ public_path('logo.png') }}" alt="Logo" style="height: 60px; margin-bottom: 5px;">
+        {{-- <img src="{{ public_path('logo.png') }}" alt="Logo" style="height: 60px; margin-bottom: 5px;"> --}}
         <h1>Sistema de Gestión de Ayudas Sociales</h1>
         <p>Alcaldía de Mariño - Estado Nueva Esparta</p>
     </div>
@@ -56,12 +56,24 @@
                     <span class="label">ESTADO ACTUAL</span>
                     @php
                         $statusColors = [
-                            'open' => 'bg-blue', 'in_review' => 'bg-gray', 'approved' => 'bg-green',
-                            'rejected' => 'bg-red', 'closed' => 'bg-gray'
+                            'open' => 'bg-blue',
+                            'pending' => 'bg-yellow',
+                            'in_progress' => 'bg-yellow',
+                            'in_review' => 'bg-gray',
+                            'approved' => 'bg-green',
+                            'rejected' => 'bg-red',
+                            'fulfilled' => 'bg-purple',
+                            'closed' => 'bg-gray'
                         ];
                         $statusLabels = [
-                            'open' => 'ABIERTO', 'in_review' => 'EN REVISIÓN', 'approved' => 'APROBADO',
-                            'rejected' => 'RECHAZADO', 'closed' => 'CERRADO'
+                            'open' => 'ABIERTO',
+                            'pending' => 'EN PROCESO',
+                            'in_progress' => 'EN REVISIÓN',
+                            'in_review' => 'EN REVISIÓN',
+                            'approved' => 'APROBADO',
+                            'rejected' => 'RECHAZADO',
+                            'fulfilled' => 'ENTREGADO',
+                            'closed' => 'CERRADO'
                         ];
                     @endphp
                     <span class="badge {{ $statusColors[$case->status] ?? 'bg-gray' }}">
@@ -75,11 +87,17 @@
             </div>
             <div class="info-row">
                 <div class="info-cell">
+                    <span class="label">RESPONSABLE DEL CASO</span>
+                    {{ $case->assignee ? $case->assignee->name : 'Sin asignar' }}
+                </div>
+                <div class="info-cell">
                     <span class="label">CATEGORÍA</span>
                     {{ $case->category ? $case->category->name : '-' }}
                     @if($case->subcategory) / {{ $case->subcategory->name }} @endif
                 </div>
-                <div class="info-cell">
+            </div>
+            <div class="info-row">
+                <div class="info-cell" style="width: 100%">
                     <span class="label">DESCRIPCIÓN</span>
                     {{ $case->description }}
                 </div>
@@ -124,16 +142,31 @@
 
     @if($case->applicant && $case->applicant_id !== $case->beneficiary_id)
     <div class="section">
-        <div class="section-title">SOLICITANTE</div>
+        <div class="section-title">SOLICITANTE (Persona que realiza la solicitud)</div>
         <div class="info-grid">
             <div class="info-row">
                 <div class="info-cell">
-                    <span class="label">NOMBRE</span>
+                    <span class="label">NOMBRE COMPLETO</span>
                     {{ $case->applicant->first_name }} {{ $case->applicant->last_name }}
                 </div>
                 <div class="info-cell">
                     <span class="label">IDENTIFICACIÓN</span>
                     {{ $case->applicant->nationality }}-{{ $case->applicant->identification_value }}
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-cell">
+                    <span class="label">TELÉFONO</span>
+                    {{ $case->applicant->phone ?? 'No registrado' }}
+                </div>
+                <div class="info-cell">
+                    <span class="label">DIRECCIÓN</span>
+                    @if($case->applicant->street)
+                        {{ $case->applicant->street->name }}, 
+                        {{ $case->applicant->street->community->name ?? '' }}
+                    @else
+                        No registrada
+                    @endif
                 </div>
             </div>
         </div>
@@ -148,6 +181,7 @@
                     <th>Ítem</th>
                     <th>Cantidad</th>
                     <th>Estado</th>
+                    <th>Responsable</th>
                 </tr>
             </thead>
             <tbody>
@@ -168,17 +202,35 @@
                             @php
                                 $itemStatusMap = [
                                     'approved' => 'Aprobado', 'fulfilled' => 'Entregado',
-                                    'rejected' => 'Rechazado', 'open' => 'Pendiente'
+                                    'rejected' => 'Rechazado', 'open' => 'Pendiente', 'pending' => 'Pendiente'
                                 ];
                             @endphp
                             {{ $itemStatusMap[$item->status] ?? ucfirst($item->status) }}
                             @if($item->fulfilled_at)
                                 <br><small>Entregado: {{ $item->fulfilled_at->format('d/m/Y') }}</small>
                             @endif
+                            @if($item->review_note)
+                                <br><small style="color:#666">{{ $item->review_note }}</small>
+                            @endif
+                        </td>
+                        <td>
+                            @if($item->assignedTo)
+                                <strong>{{ $item->assignedTo->name }}</strong>
+                            @else
+                                <span style="color:#999">Sin asignar</span>
+                            @endif
+                            
+                            @if($item->reviewer)
+                                <br><small>Rev: {{ $item->reviewer->name }}</small>
+                            @endif
+                            
+                            @if($item->fulfilledBy)
+                                <br><small>Entregó: {{ $item->fulfilledBy->name }}</small>
+                            @endif
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" style="text-align:center">No hay ítems registrados</td></tr>
+                    <tr><td colspan="4" style="text-align:center">No hay ítems registrados</td></tr>
                 @endforelse
             </tbody>
         </table>

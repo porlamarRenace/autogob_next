@@ -24,7 +24,9 @@ class CaseItem extends Model
         'reviewed_by',
         'review_note',
         'fulfilled_at',
-        'fulfilled_by'
+        'fulfilled_at',
+        'fulfilled_by',
+        'assigned_to'
     ];
 
     protected $casts = [
@@ -49,5 +51,10 @@ class CaseItem extends Model
     public function fulfilledBy()
     {
         return $this->belongsTo(User::class, 'fulfilled_by');
+    }
+
+    public function assignedTo()
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 }

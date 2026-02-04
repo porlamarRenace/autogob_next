@@ -140,6 +140,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('reports/case/{case}/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'caseDetail'])->name('reports.case.pdf');
         Route::get('reports/citizen/{citizen}/expedient-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'citizenExpedient'])->name('reports.citizen.pdf');
         Route::get('reports/approved-aids', [\App\Http\Controllers\Admin\ReportController::class, 'approvedAids'])->name('reports.approved-aids');
+        
+        // Expedientes de Ciudadanos
+        Route::get('reports/citizens', [\App\Http\Controllers\Admin\ReportController::class, 'citizensList'])->name('reports.citizens')->middleware('can:view citizen expedients');
+        Route::get('reports/citizens/{citizen}/expedient', [\App\Http\Controllers\Admin\ReportController::class, 'showExpedient'])->name('reports.citizens.expedient')->middleware('can:view citizen expedients');
+
+        // Reporte de Stock
+        Route::get('reports/stock', [\App\Http\Controllers\Admin\ReportController::class, 'stockReport'])->name('reports.stock');
+        Route::get('reports/stock/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'stockReportPdf'])->name('reports.stock.pdf');
+    });
+
+    // Reportes de actividad - accesibles para operadores también (fuera del middleware admin)
+    Route::get('reports/activity', [\App\Http\Controllers\Admin\ReportController::class, 'activityReport'])
+        ->name('reports.activity')
+        ->middleware('can:view activity reports');
+    Route::get('reports/activity/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'activityReportPdf'])
+        ->name('reports.activity.pdf')
+        ->middleware('can:view activity reports');
+    
+    // Mis Asignaciones - Gestión de casos e items asignados
+    Route::middleware('can:manage assignments')->group(function () {
+        Route::get('assignments', [\App\Http\Controllers\Admin\ReportController::class, 'myAssignments'])->name('assignments.index');
+        Route::get('assignments/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'myAssignmentsPdf'])->name('assignments.pdf');
+        
+        // Acciones sobre items
+        Route::post('assignments/items/{item}/approve', [\App\Http\Controllers\Admin\ReportController::class, 'approveItem'])->name('assignments.items.approve');
+        Route::post('assignments/items/{item}/reject', [\App\Http\Controllers\Admin\ReportController::class, 'rejectItem'])->name('assignments.items.reject');
+        Route::post('assignments/items/{item}/fulfill', [\App\Http\Controllers\Admin\ReportController::class, 'fulfillItem'])->name('assignments.items.fulfill');
+        
+        // Acciones sobre casos
+        Route::post('assignments/cases/{case}/approve', [\App\Http\Controllers\Admin\ReportController::class, 'approveCase'])->name('assignments.cases.approve');
+        Route::post('assignments/cases/{case}/reject', [\App\Http\Controllers\Admin\ReportController::class, 'rejectCase'])->name('assignments.cases.reject');
     });
 });
 

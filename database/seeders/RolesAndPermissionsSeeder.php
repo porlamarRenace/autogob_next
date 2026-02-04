@@ -30,10 +30,14 @@ class RolesAndPermissionsSeeder extends Seeder
             // Gestión de Casos (Flujo Gerencial)
             'assign cases',    // Asignar a especialistas
             'review cases',    // Auditar/Aprobar/Rechazar ítems
+            'manage assignments',  // Gestionar asignaciones (aprobar/rechazar)
+            'view all cases',  // Ver todos los casos en bandeja general
             
             // Stock y Reportes
             'manage stock',
             'view reports',
+            'view citizen expedients',  // Ver expedientes de ciudadanos
+            'view activity reports',    // Ver reportes de actividad/cierre
             
             // Administración
             'manage users',    // Crear otros usuarios
@@ -57,7 +61,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $operatorRole = Role::firstOrCreate(['name' => 'operator']);
         $operatorRole->syncPermissions([
             'view citizens', 'create citizens', 'edit citizens',
-            'view cases', 'create cases'
+            'view cases', 'create cases',
+            'view activity reports'  // Puede ver su propio cierre de caja
         ]);
 
         // Rol: Gerente/Especialista (Revisa y Asigna)
@@ -67,9 +72,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'view cases', 
             'assign cases', 
             'review cases',
+            'manage assignments',
+            'view all cases',
             'view dashboard',
             'manage stock',
-            'view reports'
+            'view reports',
+            'view citizen expedients',
+            'view activity reports'
         ]);
 
         // 5. Crear Usuario Super Admin por defecto

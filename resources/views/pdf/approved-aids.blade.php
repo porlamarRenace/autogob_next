@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ public_path('logo.png') }}" alt="Logo" style="height: 60px; margin-bottom: 5px;">
+        {{-- <img src="{{ public_path('logo.png') }}" alt="Logo" style="height: 60px; margin-bottom: 5px;"> --}}
         <h1>Sistema de Gestión de Ayudas Sociales</h1>
         <p>Alcaldía de Mariño - Estado Nueva Esparta</p>
         <h2 style="font-size: 14px; margin-top: 5px;">Reporte de Ayudas Aprobadas</h2>

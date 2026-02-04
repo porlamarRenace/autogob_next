@@ -182,6 +182,11 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                 }
             }
 
+            if (response.data.pdf_url) {
+                // Abrir PDF en nueva pestaña
+                window.open(response.data.pdf_url, '_blank');
+            }
+
             Toast.fire({ icon: "success", title: "Solicitud creada" });
             onSuccess();
         } catch (error: any) {

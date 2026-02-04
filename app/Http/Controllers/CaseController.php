@@ -130,7 +130,6 @@ class CaseController extends Controller
             'applicant_id' => 'nullable|exists:citizens,id', // Solicitante (quien pide la ayuda)
             'beneficiary_id' => 'nullable|exists:citizens,id', // Beneficiario (quien recibe la ayuda)
             'category_id' => 'required|exists:categories,id',
-            'subcategory_id' => 'nullable|exists:categories,id',
             'channel' => 'required|string',
             'description' => 'required|string',
             'items' => 'required|array|min:1',
@@ -163,9 +162,10 @@ class CaseController extends Controller
             ->whereIn('status', ['open', 'in_progress'])
             ->first();
 
+        // REGLA: No permitir abrir nuevo caso si ya tiene uno activo en la MISMA CATEGORÍA PRINCIPAL
         if ($activeCase) {
             return response()->json([
-                'message' => "El beneficiario ya tiene un caso activo en esta categoría (Folio: {$activeCase->case_number}). Debe cerrar ese caso antes de abrir uno nuevo."
+                'message' => "El beneficiario ya tiene un caso activo en esta categoría (Folio: {$activeCase->case_number}). Debe procesar ese caso antes de abrir uno nuevo."
             ], 422); 
         }
 
@@ -178,7 +178,8 @@ class CaseController extends Controller
                 'beneficiary_id' => $beneficiaryId,
                 'user_id' => auth()->id(),
                 'category_id' => $request->category_id,
-                'subcategory_id' => $request->subcategory_id,
+                // Subcategory ID ya no es obligatorio en la cabecera, pues los items definen esto
+                'subcategory_id' => $request->subcategory_id, 
                 'channel' => $request->channel,
                 'description' => $request->description,
                 'status' => 'open'
@@ -198,9 +199,15 @@ class CaseController extends Controller
                 ]);
             }
 
-            return response()->json(['message' => 'Caso creado exitosamente', 'case' => $socialCase]);
+            // Retornar ID para redirección a PDF
+            return response()->json([
+                'message' => 'Caso creado exitosamente', 
+                'case' => $socialCase,
+                'pdf_url' => route('reports.case.pdf', $socialCase)
+            ]);
         });
     }
+
     public function show($id)
     {
         if (!auth()->user()->can('view cases')) {
@@ -208,28 +215,30 @@ class CaseController extends Controller
         }
         $case = SocialCase::with([
             'citizen.street.community.municipality',    
-            'items.itemable', 
+            'items.assignedTo', // Cargar asignado del item
+            'items.itemable' => function ($morphTo) {
+                $morphTo->morphWith([
+                    Supply::class => ['category'],
+                ]);
+            },
             'creator',        
             'category',
             'subcategory',
             'assignee',
-            'media' // Cargar archivos adjuntos
+            'media' 
         ])->findOrFail($id);
 
         $specialists = User::permission('review cases')
-            ->where('id', '!=', auth()->id()) // Opcional: excluirse a sí mismo
+            ->where('id', '!=', auth()->id()) 
             ->get(['id', 'name', 'email']);
+
         switch ($case->status) {
-            case 'open':
-                $case->status = 'Abierto';
-                break;
-            case 'in_progress':
-                $case->status = 'En_progreso';
-                break;
-            case 'in_review':
-                $case->status = 'En_revision';
-                break;
+            case 'open': $case->statusLabel = 'Abierto'; break;
+            case 'in_progress': $case->statusLabel = 'En Progreso'; break;
+            case 'in_review': $case->statusLabel = 'En Revisión'; break;
+            default: $case->statusLabel = ucfirst($case->status); break;
         }
+
         return Inertia::render('cases/review', [
             'socialCase' => $case,
             'specialists' => $specialists,
@@ -239,6 +248,7 @@ class CaseController extends Controller
             ]
         ]);
     }
+
     public function assign(Request $request, $id)
     {
         if (!auth()->user()->can('assign cases')) {
@@ -249,15 +259,40 @@ class CaseController extends Controller
 
         $request->validate([
             'assigned_to' => 'required|exists:users,id',
+            'item_ids' => 'nullable|array', // Opción para asignar items específicos
+            'item_ids.*' => 'exists:case_items,id',
             'note' => 'nullable|string'
         ]);
 
-        $case->update([
-            'assigned_to' => $request->assigned_to,
-            'status' => 'in_progress'
-        ]);
+        if ($request->filled('item_ids') && count($request->item_ids) > 0) {
+            // Asignación Granular: Asignar solo items específicos
+            $case->items()->whereIn('id', $request->item_ids)->update([
+                'assigned_to' => $request->assigned_to
+            ]);
+            
+            // Si al menos un item es asignado, el caso pasa a 'in_progress'
+            if ($case->status === 'open') {
+                $case->update(['status' => 'in_progress']);
+            }
+            
+            $msg = 'Ítems asignados correctamente.';
+
+        } else {
+            // Asignación General: Asignar todo el caso (Cabecera + Items sin asignar)
+            $case->update([
+                'assigned_to' => $request->assigned_to,
+                'status' => 'in_progress'
+            ]);
+            
+            // Opcional: También asignar todos los items que no tengan asignado
+            $case->items()->whereNull('assigned_to')->update([
+                'assigned_to' => $request->assigned_to
+            ]);
+
+            $msg = 'Caso asignado correctamente al especialista.';
+        }
         
-        return back()->with('message', 'Caso asignado correctamente.');
+        return back()->with('message', $msg);
     }
     public function review(Request $request, $id)
     {

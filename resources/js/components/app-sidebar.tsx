@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { create, index } from '@/routes/cases';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, FilePlus, FileText, Users, UserPlus, Briefcase, List, Pill, Package, BarChart } from 'lucide-react';
+import { LayoutGrid, FilePlus, FileText, Users, UserPlus, Briefcase, List, Pill, Package, BarChart, UserCircle, PackageSearch, TrendingUp, ClipboardCheck } from 'lucide-react';
 import AppLogo from './app-logo';
 
 // 1. Extendemos la interfaz para soportar permisos
@@ -92,6 +92,30 @@ export function AppSidebar() {
             href: route('reports.index'),
             icon: BarChart,
             permission: 'view reports',
+        },
+        {
+            title: 'Expedientes',
+            href: route('reports.citizens'),
+            icon: UserCircle,
+            permission: 'view citizen expedients',
+        },
+        {
+            title: 'Reporte de Stock',
+            href: route('reports.stock'),
+            icon: PackageSearch,
+            permission: 'view reports',
+        },
+        {
+            title: 'Mi Actividad',
+            href: route('reports.activity'),
+            icon: TrendingUp,
+            permission: 'view activity reports',
+        },
+        {
+            title: 'Mis Asignaciones',
+            href: route('assignments.index'),
+            icon: ClipboardCheck,
+            permission: 'manage assignments',
         }
     ];
 

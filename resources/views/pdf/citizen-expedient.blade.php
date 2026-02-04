@@ -21,8 +21,9 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ public_path('logo.png') }}" alt="Logo" style="height: 60px; margin-bottom: 5px;">
-        @if($citizen->photo_url)
+        {{-- <img src="{{ public_path('logo.png') }}" alt="Logo" style="height: 60px; margin-bottom: 5px;"> --}}
+        {{-- Photo loading disabled for performance --}}
+        @if(false && $citizen->photo_url)
             <img src="{{ public_path($citizen->photo_url) }}" class="photo" alt="Foto">
         @endif
         <h2>EXPEDIENTE DEL CIUDADANO</h2>
@@ -58,13 +59,28 @@
     <div class="section-title">PERFIL DE SALUD</div>
     <div class="grid">
         <div class="row">
-            <div class="col"><span class="label">Discapacidad:</span> {{ $citizen->healthProfile->has_disability ? 'SÍ - ' . $citizen->healthProfile->disability_type : 'NO' }}</div>
-            <div class="col"><span class="label">Condición Crónica:</span> {{ $citizen->healthProfile->has_chronic_condition ? 'SÍ - ' . $citizen->healthProfile->chronic_condition_type : 'NO' }}</div>
+            <div class="col"><span class="label">Discapacidad:</span> {{ $citizen->healthProfile->is_disabled ? 'SÍ - ' . $citizen->healthProfile->disability_type : 'NO' }}</div>
+            <div class="col"><span class="label">Tipo de Sangre:</span> {{ $citizen->healthProfile->blood_type ?? 'No registrado' }}</div>
         </div>
         <div class="row">
-            <div class="col"><span class="label">Embarazo:</span> {{ $citizen->healthProfile->is_pregnant ? 'SÍ' : 'NO' }}</div>
-            <div class="col"><span class="label">Medicamentos:</span> {{ $citizen->healthProfile->requires_medication ? 'SÍ' : 'NO' }}</div>
+            <div class="col"><span class="label">Diabetes:</span> {{ $citizen->healthProfile->has_diabetes ? 'SÍ' : 'NO' }}</div>
+            <div class="col"><span class="label">Hipertensión:</span> {{ $citizen->healthProfile->has_hypertension ? 'SÍ' : 'NO' }}</div>
         </div>
+        <div class="row">
+            <div class="col"><span class="label">Cáncer:</span> {{ $citizen->healthProfile->has_cancer ? 'SÍ' : 'NO' }}</div>
+            <div class="col"><span class="label">Peso/Altura:</span> 
+                @if($citizen->healthProfile->weight || $citizen->healthProfile->height)
+                    {{ $citizen->healthProfile->weight ?? '-' }}kg / {{ $citizen->healthProfile->height ?? '-' }}cm
+                @else
+                    No registrado
+                @endif
+            </div>
+        </div>
+        @if($citizen->healthProfile->notes)
+        <div class="row">
+            <div class="col" style="width:100%"><span class="label">Notas Médicas:</span> {{ $citizen->healthProfile->notes }}</div>
+        </div>
+        @endif
     </div>
     @endif
 
@@ -89,15 +105,31 @@
                             <br>Cant: {{ $item->quantity }}
                         </td>
                         <td>
-                            @if($item->status == 'fulfilled')
-                                <span style="color:green; font-weight:bold">ENTREGADO</span>
-                                <br><small>{{ $item->fulfilled_at ? $item->fulfilled_at->format('d/m/Y') : '' }}</small>
-                            @elseif($item->status == 'approved')
-                                <span style="color:blue">APROBADO</span>
-                            @elseif($item->status == 'rejected')
-                                <span style="color:red">RECHAZADO</span>
-                            @else
-                                <span>{{ strtoupper($item->status) }}</span>
+                            @php
+                                $statusColors = [
+                                    'open' => '#3b82f6',
+                                    'pending' => '#eab308',
+                                    'in_progress' => '#eab308',
+                                    'approved' => '#22c55e',
+                                    'rejected' => '#ef4444',
+                                    'fulfilled' => '#a855f7',
+                                    'closed' => '#6b7280'
+                                ];
+                                $statusLabels = [
+                                    'open' => 'ABIERTO',
+                                    'pending' => 'EN PROCESO',
+                                    'in_progress' => 'EN REVISIÓN',
+                                    'approved' => 'APROBADO',
+                                    'rejected' => 'RECHAZADO',
+                                    'fulfilled' => 'ENTREGADO',
+                                    'closed' => 'CERRADO'
+                                ];
+                                $color = $statusColors[$item->status] ?? '#6b7280';
+                                $label = $statusLabels[$item->status] ?? strtoupper($item->status);
+                            @endphp
+                            <span style="color:{{ $color }}; font-weight:bold">{{ $label }}</span>
+                            @if($item->status == 'fulfilled' && $item->fulfilled_at)
+                                <br><small>{{ $item->fulfilled_at->format('d/m/Y') }}</small>
                             @endif
                         </td>
                     </tr>
