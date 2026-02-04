@@ -525,6 +525,7 @@ class ReportController extends Controller
             'total_items' => $assignedItems->count(),
             'pending_cases' => $assignedCases->whereIn('status', ['open', 'pending', 'in_progress'])->count(),
             'pending_items' => $assignedItems->whereIn('status', ['open', 'pending', 'in_progress'])->count(),
+            'approved_rate' => $this->calculateApprovalRate($user->id)
         ];
 
         $pdf = Pdf::loadView('pdf.my-assignments', [

@@ -5,272 +5,318 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Asignaciones - {{ $user->name }}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @page {
+            margin: 0cm 0cm;
         }
         body {
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 10pt;
-            color: #333;
-            line-height: 1.4;
+            color: #1e293b;
+            background-color: #ffffff;
+            margin-top: 3cm;
+            margin-left: 2cm;
+            margin-right: 2cm;
+            margin-bottom: 2cm;
+            line-height: 1.5;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #2563eb;
-        }
-        .header h1 {
-            color: #1e40af;
-            font-size: 20pt;
-            margin-bottom: 5px;
-        }
-        .header .subtitle {
-            color: #64748b;
-            font-size: 11pt;
-        }
-        .user-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        .period-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        .period-box strong {
-            color: #1e40af;
-        }
-        .stats-grid {
+        
+        /** Header con estilo **/
+        header {
+            position: fixed;
+            top: 0cm;
+            left: 0cm;
+            right: 0cm;
+            height: 3cm;
+            background-color: #1e3a8a; /* Azul corporativo */
+            color: white;
+            padding: 0 2cm;
             display: table;
             width: 100%;
-            margin: 20px 0;
-            border-collapse: collapse;
         }
-        .stat-row {
-            display: table-row;
+        .header-content {
+            display: table-cell;
+            vertical-align: middle;
+            width: 60%;
+        }
+        .header-meta {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            font-size: 9pt;
+            color: #bfdbfe;
+        }
+        h1 {
+            font-size: 18pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            font-weight: 700;
+        }
+        .subtitle {
+            font-size: 10pt;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /** Footer **/
+        footer {
+            position: fixed; 
+            bottom: 0cm; 
+            left: 0cm; 
+            right: 0cm;
+            height: 1.5cm;
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            line-height: 1.5cm;
+            font-size: 8pt;
+            color: #64748b;
+            text-align: center;
+        }
+
+        /** Secciones **/
+        .section-title {
+            color: #1e3a8a;
+            font-size: 12pt;
+            font-weight: bold;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /** Stats Cards **/
+        .stats-container {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .stats-row {
+            display: table;
+            width: 100%;
+            border-spacing: 10px 0; /* Espacio entre columnas */
         }
         .stat-card {
             display: table-cell;
             width: 25%;
-            padding: 12px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            text-align: center;
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            vertical-align: middle;
+        }
+        .stat-number {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #0f172a;
+            display: block;
         }
         .stat-label {
+            font-size: 8pt;
             color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /** Info Box **/
+        .info-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
             font-size: 9pt;
+        }
+        .info-row {
             margin-bottom: 5px;
         }
-        .stat-value {
-            font-size: 18pt;
+        .label {
             font-weight: bold;
-            color: #2563eb;
+            color: #475569;
+            width: 120px;
+            display: inline-block;
         }
-        .section-title {
-            background: #1e40af;
-            color: white;
-            padding: 8px 10px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 11pt;
-        }
+
+        /** Tablas **/
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            font-size: 9pt;
         }
         th {
-            background: #1e40af;
-            color: white;
-            padding: 8px;
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 8pt;
+            padding: 10px 8px;
+            border-bottom: 2px solid #cbd5e1;
             text-align: left;
-            font-size: 9pt;
         }
         td {
-            padding: 6px 8px;
+            padding: 10px 8px;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 9pt;
+            color: #334155;
+            vertical-align: top;
         }
         tr:nth-child(even) {
-            background: #f8fafc;
+            background-color: #f8fafc;
         }
+        
+        /** Badges **/
         .badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 8pt;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 7pt;
             font-weight: bold;
-            color: white;
+            text-transform: uppercase;
+            display: inline-block;
         }
-        .badge-open { background: #3b82f6; }
-        .badge-pending { background: #eab308; }
-        .badge-in_progress { background: #eab308; }
-        .badge-approved { background: #22c55e; }
-        .badge-rejected { background: #ef4444; }
-        .badge-fulfilled { background: #a855f7; }
-        .badge-closed { background: #6b7280; }
-        .footer {
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 1px solid #e2e8f0;
-            text-align: center;
-            color: #64748b;
-            font-size: 9pt;
-        }
+        .bg-pending { background: #fef9c3; color: #854d0e; }
+        .bg-approved { background: #dcfce7; color: #166534; }
+        .bg-rejected { background: #fee2e2; color: #991b1b; }
+        .bg-closed { background: #f1f5f9; color: #475569; }
+        .bg-fulfilled { background: #f3e8ff; color: #6b21a8; }
+        .bg-open { background: #dbeafe; color: #1e40af; }
+        .bg-in_progress { background: #fff7ed; color: #9a3412; }
+
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>MIS ASIGNACIONES</h1>
-        <p class="subtitle">Reporte de Casos e Items Asignados</p>
-    </div>
+    <header>
+        <div class="header-content">
+            <h1>Mis Asignaciones</h1>
+            <div class="subtitle">Reporte de Gestión Individual</div>
+        </div>
+        <div class="header-meta">
+            <div>Fecha: {{ now()->format('d/m/Y') }}</div>
+            <div>Usuario: {{ $user->name }}</div>
+        </div>
+    </header>
 
-    <div class="user-box">
-        <strong>Usuario:</strong> {{ $user->name }}<br>
-        <strong>Email:</strong> {{ $user->email }}
-    </div>
+    <footer>
+        Sistema de Gestión de Ayudas Sociales - Documento Confidencial - Página <span class="pagenum"></span>
+    </footer>
 
-    <div class="period-box">
-        <strong>Período del Reporte:</strong> 
-        {{ \Carbon\Carbon::parse($period['start'])->format('d/m/Y') }} - 
-        {{ \Carbon\Carbon::parse($period['end'])->format('d/m/Y') }}
+    <!-- Resumen de Filtros -->
+    <div class="info-box">
+        <div class="info-row">
+            <span class="label">Período:</span>
+            {{ \Carbon\Carbon::parse($period['start'])->format('d/m/Y') }} — {{ \Carbon\Carbon::parse($period['end'])->format('d/m/Y') }}
+        </div>
         @if($filters['status'])
-            <br><strong>Filtro de Status:</strong> {{ ucfirst($filters['status']) }}
+        <div class="info-row">
+            <span class="label">Filtro Estado:</span>
+            {{ ucfirst($filters['status']) }}
+        </div>
         @endif
-        @if($filters['type'])
-            <br><strong>Tipo:</strong> {{ $filters['type'] === 'cases' ? 'Solo Casos' : 'Solo Items' }}
-        @endif
+        <div class="info-row">
+            <span class="label">Email:</span>
+            {{ $user->email }}
+        </div>
     </div>
 
-    <div class="stats-grid">
-        <div class="stat-row">
+    <!-- Estadísticas -->
+    <div class="stats-container">
+        <div class="stats-row">
             <div class="stat-card">
-                <div class="stat-label">Casos Asignados</div>
-                <div class="stat-value">{{ $stats['total_cases'] }}</div>
+                <span class="stat-number">{{ $stats['total_cases'] }}</span>
+                <span class="stat-label">Casos Asignados</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Items Asignados</div>
-                <div class="stat-value">{{ $stats['total_items'] }}</div>
+            <div class="stat-card" style="border-left-color: #8b5cf6;">
+                <span class="stat-number">{{ $stats['total_items'] }}</span>
+                <span class="stat-label">Items Individuales</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Casos Pendientes</div>
-                <div class="stat-value">{{ $stats['pending_cases'] }}</div>
+            <div class="stat-card" style="border-left-color: #f59e0b;">
+                <span class="stat-number">{{ $stats['pending_cases'] + $stats['pending_items'] }}</span>
+                <span class="stat-label">Pendientes Totales</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Items Pendientes</div>
-                <div class="stat-value">{{ $stats['pending_items'] }}</div>
+            <div class="stat-card" style="border-left-color: #10b981;">
+                <span class="stat-number">{{ $stats['approved_rate'] }}%</span>
+                <span class="stat-label">Tasa Aprobación</span>
             </div>
         </div>
     </div>
 
+    <!-- Casos Completos -->
     @if($assignedCases->count() > 0)
-        <div class="section-title">CASOS COMPLETOS ASIGNADOS ({{ $assignedCases->count() }})</div>
+        <div class="section-title">Casos Completos Asignados ({{ $assignedCases->count() }})</div>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 15%;">Caso</th>
-                    <th style="width: 25%;">Beneficiario</th>
-                    <th style="width: 25%;">Categoría</th>
-                    <th style="width: 10%;">Items</th>
-                    <th style="width: 15%;">Fecha</th>
-                    <th style="width: 10%;">Estado</th>
+                    <th width="15%">Folio</th>
+                    <th width="25%">Beneficiario</th>
+                    <th width="25%">Categoría</th>
+                    <th width="10%">Items</th>
+                    <th width="15%">Fecha</th>
+                    <th width="10%">Estado</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($assignedCases as $case)
-                    <tr>
-                        <td><strong>{{ $case->case_number }}</strong></td>
-                        <td>{{ $case->beneficiary->first_name ?? '' }} {{ $case->beneficiary->last_name ?? '' }}</td>
-                        <td>{{ $case->category->name ?? '' }}</td>
-                        <td>{{ $case->items->count() }}</td>
-                        <td>{{ \Carbon\Carbon::parse($case->created_at)->format('d/m/Y') }}</td>
-                        <td>
-                            @php
-                                $statusClass = 'badge-' . str_replace(' ', '_', $case->status);
-                                $statusLabels = [
-                                    'open' => 'Abierto',
-                                    'pending' => 'En proceso',
-                                    'in_progress' => 'En Revisión',
-                                    'approved' => 'Aprobado',
-                                    'rejected' => 'Rechazado',
-                                    'fulfilled' => 'Entregado',
-                                    'closed' => 'Cerrado'
-                                ];
-                            @endphp
-                            <span class="badge {{ $statusClass }}">
-                                {{ $statusLabels[$case->status] ?? $case->status }}
-                            </span>
-                        </td>
-                    </tr>
+                <tr>
+                    <td><strong>{{ $case->case_number }}</strong></td>
+                    <td>{{ $case->beneficiary->first_name }} {{ $case->beneficiary->last_name }}</td>
+                    <td>{{ $case->category->name }}</td>
+                    <td style="text-align: center;">{{ $case->items->count() }}</td>
+                    <td>{{ \Carbon\Carbon::parse($case->created_at)->format('d/m/Y') }}</td>
+                    <td>
+                        <span class="badge bg-{{ $case->status }}">
+                            {{ strtoupper(str_replace('_', ' ', $case->status)) }}
+                        </span>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     @endif
 
+    <!-- Items Individuales -->
     @if($assignedItems->count() > 0)
-        <div class="section-title">ITEMS INDIVIDUALES ASIGNADOS ({{ $assignedItems->count() }})</div>
+        <div class="section-title">Items Asignados ({{ $assignedItems->count() }})</div>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 15%;">Caso</th>
-                    <th style="width: 30%;">Item</th>
-                    <th style="width: 10%;">Cantidad</th>
-                    <th style="width: 15%;">Fecha</th>
-                    <th style="width: 15%;">Estado</th>
-                    <th style="width: 15%;">Notas</th>
+                    <th width="15%">Caso Maestro</th>
+                    <th width="30%">Descripción del Item</th>
+                    <th width="10%">Cant.</th>
+                    <th width="15%">Fecha</th>
+                    <th width="15%">Estado</th>
+                    <th width="15%">Notas</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($assignedItems as $item)
-                    <tr>
-                        <td><strong>{{ $item->socialCase->case_number ?? 'N/A' }}</strong></td>
-                        <td>{{ $item->itemable->name ?? 'N/A' }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y') }}</td>
-                        <td>
-                            @php
-                                $statusClass = 'badge-' . str_replace(' ', '_', $item->status);
-                                $statusLabels = [
-                                    'open' => 'Abierto',
-                                    'pending' => 'En proceso',
-                                    'in_progress' => 'En Revisión',
-                                    'approved' => 'Aprobado',
-                                    'rejected' => 'Rechazado',
-                                    'fulfilled' => 'Entregado',
-                                    'closed' => 'Cerrado'
-                                ];
-                            @endphp
-                            <span class="badge {{ $statusClass }}">
-                                {{ $statusLabels[$item->status] ?? $item->status }}
-                            </span>
-                        </td>
-                        <td>{{ $item->notes ?? '-' }}</td>
-                    </tr>
+                <tr>
+                    <td>{{ $item->socialCase->case_number ?? 'N/A' }}</td>
+                    <td>
+                        <strong>{{ $item->itemable->name ?? 'N/A' }}</strong>
+                        <div style="font-size: 7pt; color: #64748b; margin-top: 2px;">
+                            {{ $item->socialCase->beneficiary->first_name ?? '' }} {{ $item->socialCase->beneficiary->last_name ?? '' }}
+                        </div>
+                    </td>
+                    <td style="text-align: center;">{{ $item->quantity }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y') }}</td>
+                    <td>
+                        <span class="badge bg-{{ $item->status }}">
+                            {{ strtoupper(str_replace('_', ' ', $item->status)) }}
+                        </span>
+                    </td>
+                    <td style="font-size: 8pt; font-style: italic;">
+                        {{ \Illuminate\Support\Str::limit($item->notes, 30) ?: '-' }}
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     @endif
 
     @if($assignedCases->count() === 0 && $assignedItems->count() === 0)
-        <div class="section-title">SIN ASIGNACIONES</div>
-        <p style="text-align: center; padding: 20px; color: #64748b;">
-            No tienes casos ni items asignados en el período seleccionado.
-        </p>
+        <div style="text-align: center; margin-top: 50px; padding: 40px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
+            <p style="color: #64748b; font-size: 11pt;">No se encontraron asignaciones para los filtros seleccionados.</p>
+        </div>
     @endif
 
-    <div class="footer">
-        <p>Documento generado el {{ now()->format('d/m/Y H:i:s') }}</p>
-        <p>Sistema de Gestión de Ayudas Sociales - {{ $user->name }}</p>
-    </div>
 </body>
 </html>

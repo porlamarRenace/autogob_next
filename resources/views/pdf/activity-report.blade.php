@@ -5,299 +5,245 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $is_manager ? 'Reporte de Actividad' : 'Cierre de Caja' }}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @page { margin: 0cm; }
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            font-size: 10pt;
-            color: #333;
+            font-size: 9pt;
+            color: #1e293b;
+            background-color: #ffffff;
+            margin-top: 3.5cm;
+            margin-left: 1.5cm;
+            margin-right: 1.5cm;
+            margin-bottom: 2cm;
             line-height: 1.4;
         }
-        .header {
+
+        header {
+            position: fixed;
+            top: 0cm;
+            left: 0cm;
+            right: 0cm;
+            height: 2.8cm;
+            background-color: #1e3a8a;
+            color: white;
+            padding: 0 1.5cm;
+            display: table;
+            width: 100%;
+        }
+        .header-left {
+            display: table-cell;
+            vertical-align: middle;
+            width: 70%;
+        }
+        .header-right {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            font-size: 8pt;
+            color: #dbeafe;
+        }
+        h1 {
+            font-size: 16pt;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            margin: 0;
+            padding: 0;
+        }
+        .subtitle {
+            font-size: 10pt;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        footer {
+            position: fixed; 
+            bottom: 0px; 
+            left: 0cm; 
+            right: 0cm;
+            height: 1.2cm;
+            background-color: #f1f5f9;
+            border-top: 1px solid #e2e8f0;
+            line-height: 1.2cm;
             text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #2563eb;
-        }
-        .header h1 {
-            color: #1e40af;
-            font-size: 20pt;
-            margin-bottom: 5px;
-        }
-        .header .subtitle {
+            font-size: 8pt;
             color: #64748b;
+        }
+
+        .section-header {
+            color: #1e3a8a;
             font-size: 11pt;
+            font-weight: bold;
+            border-bottom: 2px solid #cbd5e1;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
         }
-        .user-box {
-            background: #f8fafc;
+
+        .info-panel {
+            background-color: #f8fafc;
             border: 1px solid #e2e8f0;
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 4px;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 9pt;
         }
-        .period-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        .period-box strong {
-            color: #1e40af;
-        }
+        .info-row { margin-bottom: 4px; }
+        .info-label { font-weight: bold; color: #475569; width: 140px; display: inline-block; }
+
         .stats-grid {
             display: table;
             width: 100%;
-            margin: 20px 0;
-            border-collapse: collapse;
+            border-spacing: 10px 0;
+            margin-bottom: 25px;
         }
-        .stat-row {
-            display: table-row;
-        }
-        .stat-card {
+        .stat-box {
             display: table-cell;
-            width: 25%;
-            padding: 12px;
+            vertical-align: middle;
+            width: 33%;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-        .stat-label {
-            color: #64748b;
-            font-size: 9pt;
-            margin-bottom: 5px;
+            border-radius: 6px;
+            padding: 12px;
+            border-left: 4px solid #3b82f6;
         }
         .stat-value {
-            font-size: 18pt;
+            font-size: 16pt;
             font-weight: bold;
+            color: #1e3a8a;
+            display: block;
         }
-        .stat-value.total {
-            color: #2563eb;
+        .stat-title {
+            font-size: 8pt;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-top: 4px;
+            display: block;
         }
-        .stat-value.approved {
-            color: #16a34a;
-        }
-        .stat-value.in-progress {
-            color: #ca8a04;
-        }
-        .stat-value.rejected {
-            color: #dc2626;
-        }
-        .section-title {
-            background: #1e40af;
-            color: white;
-            padding: 8px 10px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 11pt;
-        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            font-size: 8pt;
         }
         th {
-            background: #1e40af;
-            color: white;
+            background-color: #e2e8f0;
+            color: #334155;
+            font-weight: bold;
             padding: 8px;
             text-align: left;
-            font-size: 9pt;
+            text-transform: uppercase;
+            border-bottom: 2px solid #94a3b8;
         }
         td {
-            padding: 6px 8px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 9pt;
+            padding: 7px 8px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: top;
+            color: #334155;
         }
-        tr:nth-child(even) {
-            background: #f8fafc;
-        }
+        tr:nth-child(even) { background-color: #f8fafc; }
+
         .badge {
-            display: inline-block;
             padding: 2px 6px;
             border-radius: 3px;
-            font-size: 8pt;
+            font-size: 7pt;
             font-weight: bold;
-            color: white;
+            text-transform: uppercase;
         }
-        .badge-open { background: #3b82f6; }
-        .badge-pending { background: #eab308; }
-        .badge-in_progress { background: #eab308; }
-        .badge-approved { background: #22c55e; }
-        .badge-rejected { background: #ef4444; }
-        .badge-fulfilled { background: #a855f7; }
-        .badge-closed { background: #6b7280; }
-        .category-item {
-            margin-bottom: 10px;
-        }
-        .category-bar {
-            background: #e2e8f0;
-            height: 20px;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 3px;
-        }
-        .category-fill {
-            background: #3b82f6;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 5px;
-            color: white;
-            font-size: 8pt;
-            font-weight: bold;
-        }
-        .signature-box {
-            margin-top: 40px;
-            padding: 20px;
-            border: 1px dashed #94a3b8;
-        }
-        .signature-line {
-            border-top: 1px solid #333;
-            margin-top: 60px;
-            padding-top: 5px;
-            text-align: center;
-        }
-        .footer {
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 1px solid #e2e8f0;
-            text-align: center;
-            color: #64748b;
-            font-size: 9pt;
-        }
+        .bg-pending { background: #fef9c3; color: #854d0e; }
+        .bg-approved { background: #dcfce7; color: #166534; }
+        .bg-rejected { background: #fee2e2; color: #991b1b; }
+        .bg-closed { background: #f1f5f9; color: #475569; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>{{ $is_manager ? 'REPORTE DE ACTIVIDAD' : 'CIERRE DE CAJA' }}</h1>
-        <p class="subtitle">{{ $is_manager ? 'Estadísticas Generales del Sistema' : 'Resumen de Actividad Personal' }}</p>
-    </div>
-
-    @if(!$is_manager)
-        <div class="user-box">
-            <strong>Operador:</strong> {{ $user->name }}<br>
-            <strong>Email:</strong> {{ $user->email }}
+    <header>
+        <div class="header-left">
+            <h1>{{ $is_manager ? 'Reporte de Actividad Gerencial' : 'Reporte de Cierre Operativo' }}</h1>
+            <div class="subtitle">{{ $is_manager ? 'Auditoría General de Casos' : 'Mis Casos Gestionados' }}</div>
         </div>
-    @endif
+        <div class="header-right">
+            <div>Generado: {{ now()->format('d/m/Y H:i') }}</div>
+            <div>Usuario: {{ $user->name }}</div>
+        </div>
+    </header>
 
-    <div class="period-box">
-        <strong>Período del Reporte:</strong> 
-        {{ \Carbon\Carbon::parse($period['start'])->format('d/m/Y') }} - 
-        {{ \Carbon\Carbon::parse($period['end'])->format('d/m/Y') }}
+    <footer>
+        Sistema de Gestión de Ayudas Sociales — Reporte Oficial
+    </footer>
+
+    <div class="info-panel">
+        <div class="info-row">
+            <span class="info-label">Rango de Fechas:</span>
+            {{ \Carbon\Carbon::parse($period['start'])->format('d/m/Y') }} — {{ \Carbon\Carbon::parse($period['end'])->format('d/m/Y') }}
+        </div>
+        <div class="info-row">
+            <span class="info-label">Total Casos:</span>
+            {{ $stats['total'] }} registrados en el período
+        </div>
     </div>
 
+    <!-- Stats -->
     <div class="stats-grid">
-        <div class="stat-row">
-            <div class="stat-card">
-                <div class="stat-label">Total de Casos</div>
-                <div class="stat-value total">{{ $stats['total'] }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Aprobados</div>
-                <div class="stat-value approved">{{ $stats['by_status']->where('status', 'approved')->first()->total ?? 0 }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">En Revisión</div>
-                <div class="stat-value in-progress">{{ $stats['by_status']->where('status', 'in_progress')->first()->total ?? 0 }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Rechazados</div>
-                <div class="stat-value rejected">{{ $stats['by_status']->where('status', 'rejected')->first()->total ?? 0 }}</div>
-            </div>
+        <div class="stat-box">
+            <span class="stat-value">{{ $stats['total'] }}</span>
+            <span class="stat-title">Total Casos</span>
+        </div>
+        
+        @php
+            $approved = $stats['by_status']->where('status', 'approved')->first();
+            $approvedCount = $approved ? $approved->total : 0;
+            
+            $cat = $stats['by_category']->sortByDesc('total')->first();
+            $topCat = $cat ? $cat->name : 'N/A';
+            $topCatCount = $cat ? $cat->total : 0;
+        @endphp
+
+        <div class="stat-box" style="border-left-color: #10b981;">
+            <span class="stat-value">{{ $approvedCount }}</span>
+            <span class="stat-title">Aprobados</span>
+        </div>
+        <div class="stat-box" style="border-left-color: #8b5cf6;">
+            <span class="stat-value">{{ $topCatCount }}</span>
+            <span class="stat-title">Top: {{ \Illuminate\Support\Str::limit($topCat, 15) }}</span>
         </div>
     </div>
 
-    <div class="section-title">DESGLOSE POR CATEGORÍA</div>
-    
-    @if($stats['by_category']->count() === 0)
-        <p style="text-align: center; padding: 20px; color: #64748b;">No hay datos para mostrar</p>
-    @else
-        @foreach($stats['by_category'] as $category)
-            <div class="category-item">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                    <span style="font-weight: bold;">{{ $category->name }}</span>
-                    <span style="color: #64748b;">{{ $category->total }} casos ({{ round(($category->total / $stats['total']) * 100, 1) }}%)</span>
-                </div>
-                <div class="category-bar">
-                    <div class="category-fill" style="width: {{ ($category->total / $stats['total']) * 100 }}%;">
-                        &nbsp;
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    @endif
-
-    <div class="section-title">LISTADO DE CASOS ({{ $cases->count() }})</div>
-
-    @if($cases->count() === 0)
-        <p style="text-align: center; padding: 30px; color: #64748b;">
-            No se crearon casos en este período
-        </p>
-    @else
+    <!-- Tabla -->
+    @if($cases->count() > 0)
+        <div class="section-header">Listado de Casos</div>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 20%;">Caso</th>
-                    <th style="width: 30%;">Beneficiario</th>
-                    <th style="width: 25%;">Categoría</th>
-                    <th style="width: 15%;">Fecha</th>
-                    <th style="width: 10%;">Estado</th>
+                    <th width="15%">Folio</th>
+                    <th width="25%">Beneficiario</th>
+                    <th width="25%">Categoría</th>
+                    <th width="15%">Estado</th>
+                    <th width="20%">Fecha</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($cases as $case)
-                    <tr>
-                        <td><strong>{{ $case->case_number }}</strong></td>
-                        <td>{{ $case->beneficiary->first_name ?? '' }} {{ $case->beneficiary->last_name ?? '' }}</td>
-                        <td>{{ $case->category->name ?? '' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($case->created_at)->format('d/m/Y') }}</td>
-                        <td>
-                            @php
-                                $statusClass = 'badge-' . str_replace(' ', '_', $case->status);
-                                $statusLabels = [
-                                    'open' => 'Abierto',
-                                    'pending' => 'En proceso',
-                                    'in_progress' => 'En Revisión',
-                                    'approved' => 'Aprobado',
-                                    'rejected' => 'Rechazado',
-                                    'fulfilled' => 'Entregado',
-                                    'closed' => 'Cerrado'
-                                ];
-                            @endphp
-                            <span class="badge {{ $statusClass }}">
-                                {{ $statusLabels[$case->status] ?? $case->status }}
-                            </span>
-                        </td>
-                    </tr>
+                <tr>
+                    <td><strong>{{ $case->case_number }}</strong></td>
+                    <td>{{ $case->beneficiary->first_name ?? '' }} {{ $case->beneficiary->last_name ?? '' }}</td>
+                    <td>{{ $case->category->name ?? 'Sin categoría' }}</td>
+                    <td>
+                        <span class="badge bg-{{ $case->status }}">
+                            {{ strtoupper(str_replace('_', ' ', $case->status)) }}
+                        </span>
+                    </td>
+                    <td>{{ \Carbon\Carbon::parse($case->created_at)->format('d/m/Y H:i') }}</td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
-    @endif
-
-    @if(!$is_manager)
-        <div class="signature-box">
-            <p style="margin-bottom: 10px;"><strong>Observaciones:</strong></p>
-            <p style="color: #64748b; font-size: 9pt; margin-bottom: 20px;">
-                _______________________________________________________________________________
-            </p>
-            <p style="color: #64748b; font-size: 9pt;">
-                _______________________________________________________________________________
-            </p>
-
-            <div class="signature-line">
-                Firma del Operador
-            </div>
+    @else
+        <div style="text-align: center; padding: 40px; color: #94a3b8; font-style: italic;">
+            No hay casos registrados en este período.
         </div>
     @endif
 
-    <div class="footer">
-        <p>Documento generado el {{ now()->format('d/m/Y H:i:s') }}</p>
-        <p>Sistema de Gestión de Ayudas Sociales</p>
-    </div>
 </body>
 </html>
