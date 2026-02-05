@@ -145,7 +145,8 @@ class CitizenController extends Controller
                 'street_id' => $validated['street_id'],
                 'reference_point' => $validated['reference_point'] ?? null,
                 'photo' => $validated['photo'] ?? null,
-                'representative_id' => $validated['representative_id'] ?? null,
+                'photo' => $validated['photo'] ?? null,
+                'representative_id' => $this->resolveRepresentativeId($validated['representative_cedula'] ?? null),
                 // Guardamos datos sociales en el JSON 'social_data'
                 'social_data' => [
                     'profession' => $validated['profession'] ?? null,
@@ -181,7 +182,8 @@ class CitizenController extends Controller
                 'street_id' => $validated['street_id'],
                 'reference_point' => $validated['reference_point'] ?? null,
                 'photo' => $validated['photo'] ?? null,
-                'representative_id' => $validated['representative_id'] ?? null,
+                'photo' => $validated['photo'] ?? null,
+                'representative_id' => $this->resolveRepresentativeId($validated['representative_cedula'] ?? null),
                 'social_data' => [
                     'profession' => $validated['profession'] ?? null,
                     'education_level' => $validated['education_level'] ?? null,
@@ -262,9 +264,9 @@ class CitizenController extends Controller
 
         // Si es menor, requerir representante
         if ($isMinor) {
-            $rules['representative_id'] = 'required|exists:citizens,id';
+            $rules['representative_cedula'] = 'required|exists:citizens,identification_value';
         } else {
-            $rules['representative_id'] = 'nullable|exists:citizens,id';
+            $rules['representative_cedula'] = 'nullable|exists:citizens,identification_value';
         }
 
         // Mensajes en español
@@ -292,11 +294,18 @@ class CitizenController extends Controller
             'height.numeric' => 'La altura debe ser un número.',
             'height.min' => 'La altura debe ser mayor a 0.',
             'height.max' => 'La altura no puede exceder los 300 cm.',
-            'representative_id.required' => 'Los ciudadanos menores de edad deben tener un representante legal.',
-            'representative_id.exists' => 'El representante seleccionado no está registrado en el sistema.',
+            'representative_cedula.required' => 'Los ciudadanos menores de edad deben tener un representante legal.',
+            'representative_cedula.exists' => 'La cédula del representante no está registrada en el sistema.',
         ];
 
         return $request->validate($rules, $messages);
+    }
+
+    private function resolveRepresentativeId($cedula)
+    {
+        if (!$cedula) return null;
+        $rep = Citizen::where('identification_value', $cedula)->first();
+        return $rep ? $rep->id : null;
     }
 
     // Función auxiliar para guardar salud (DRY)

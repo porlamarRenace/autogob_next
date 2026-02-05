@@ -86,7 +86,7 @@ export default function CitizenForm({
         email: citizenToEdit?.email || '',
         phone: citizenToEdit?.phone || '',
         // Representante legal (para menores)
-        representative_id: citizenToEdit?.representative_id?.toString() || '',
+        representative_cedula: citizenToEdit?.representative?.identification_value || '', // Usamos la cédula, no el ID
 
         // 2. DIRECCIÓN
         // Nota: En edición simple, el usuario deberá re-seleccionar la cascada si quiere cambiar la calle.
@@ -290,8 +290,8 @@ export default function CitizenForm({
                                         <div>
                                             <Label>Cédula del Representante</Label>
                                             <Input
-                                                value={data.representative_id}
-                                                onChange={e => setData('representative_id', e.target.value)}
+                                                value={data.representative_cedula}
+                                                onChange={e => setData('representative_cedula', e.target.value)}
                                                 placeholder="Ingrese cédula del representante"
                                                 className="mt-1.5"
                                                 required
