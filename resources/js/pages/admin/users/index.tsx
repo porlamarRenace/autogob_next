@@ -47,7 +47,7 @@ export default function UserIndex({ users }: Props) {
         <AppLayout breadcrumbs={[{ title: 'Administración', href: '#' }, { title: 'Usuarios', href: route('users.index') }]}>
             <Head title="Gestión de Usuarios" />
 
-            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -62,62 +62,68 @@ export default function UserIndex({ users }: Props) {
                     </Link>
                 </div>
 
-                <Card className="shadow-lg border-t-4 border-t-purple-600">
+                {/* TABLA DE USUARIOS */}
+                <Card className="w-full max-w-[calc(100vw-2rem)] sm:max-w-full shadow-lg border-t-4 border-t-purple-600 overflow-hidden mx-auto">
                     <CardContent className="p-0">
-                        <Table>
-                            <TableHeader className="bg-slate-50 dark:bg-neutral-800">
-                                <TableRow>
-                                    <TableHead>Nombre</TableHead>
-                                    <TableHead>Contacto</TableHead>
-                                    <TableHead>Rol Asignado</TableHead>
-                                    <TableHead>Fecha Registro</TableHead>
-                                    <TableHead className="text-right">Acciones</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {users.data.map((user) => (
-                                    <TableRow key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-neutral-700">
-                                        <TableCell className="font-medium text-slate-900 dark:text-slate-200">
-                                            {user.name}
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2 text-slate-500 text-sm dark:text-slate-400">
-                                                <Mail className="w-3 h-3" /> {user.email}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {user.roles.length > 0 ? (
-                                                <Badge variant="outline" className="bg-slate-100 uppercase border-slate-300 dark:bg-neutral-700 dark:border-neutral-600">
-                                                    {user.roles[0].name.replace('_', ' ')}
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant="secondary" className="text-slate-400 dark:text-slate-200">Sin Rol</Badge>
-                                            )}
-                                        </TableCell>
-                                        <TableCell className="text-xs text-slate-500 dark:text-slate-400">
-                                            {new Date(user.created_at).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Link href={route('users.edit', user.id)}>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:bg-blue-50">
-                                                        <Pencil className="h-4 w-4" />
-                                                    </Button>
-                                                </Link>
-                                                <Button
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    className="h-8 w-8 text-red-600 hover:bg-red-50 dark:hover:bg-red-500"
-                                                    onClick={() => handleDelete(user.id, user.name)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                        <div className="w-full overflow-x-auto min-w-0">
+                            <div className="inline-block min-w-full align-middle">
+                                <Table className="min-w-[850px]">
+                                    <TableHeader className="bg-slate-50 dark:bg-neutral-800">
+                                        <TableRow>
+                                            <TableHead className="px-4 py-3 text-left whitespace-nowrap">Nombre</TableHead>
+                                            <TableHead className="px-4 py-3 text-left whitespace-nowrap">Contacto</TableHead>
+                                            <TableHead className="px-4 py-3 text-left whitespace-nowrap">Rol Asignado</TableHead>
+                                            <TableHead className="px-4 py-3 text-left whitespace-nowrap">Fecha Registro</TableHead>
+                                            <TableHead className="px-4 py-3 text-right whitespace-nowrap">Acciones</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {users.data.map((user) => (
+                                            <TableRow key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-neutral-700">
+                                                <TableCell className="px-4 py-3 font-medium whitespace-nowrap">
+                                                    {user.name}
+                                                </TableCell>
+                                                <TableCell className="px-4 py-3">
+                                                    <div className="flex items-center gap-2 text-sm whitespace-nowrap">
+                                                        <Mail className="w-3 h-3 shrink-0" />
+                                                        <span className="max-w-[150px] truncate sm:max-w-none">{user.email}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="px-4 py-3 whitespace-nowrap">
+                                                    {user.roles.length > 0 ? (
+                                                        <Badge variant="outline" className="bg-slate-100 uppercase dark:bg-neutral-700">
+                                                            {user.roles[0].name.replace('_', ' ')}
+                                                        </Badge>
+                                                    ) : (
+                                                        <Badge variant="secondary">Sin Rol</Badge>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                                                    {new Date(user.created_at).toLocaleDateString()}
+                                                </TableCell>
+                                                <TableCell className="px-4 py-3 text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <Link href={route('users.edit', user.id)}>
+                                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600">
+                                                                <Pencil className="h-4 w-4" />
+                                                            </Button>
+                                                        </Link>
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
+                                                            className="h-8 w-8 text-red-600"
+                                                            onClick={() => handleDelete(user.id, user.name)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
                     </CardContent>
 
                     {/* PAGINACIÓN */}
