@@ -44,7 +44,7 @@ export default function RoleIndex({ roles }: Props) {
         <AppLayout breadcrumbs={[{ title: 'Administración', href: '#' }, { title: 'Roles y Permisos', href: route('roles.index') }]}>
             <Head title="Gestión de Roles" />
 
-            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">

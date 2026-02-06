@@ -62,7 +62,7 @@ export default function CaseIndex({ cases, filters }: Props) {
         <AppLayout breadcrumbs={[{ title: 'Gestión', href: '#' }, { title: 'Bandeja de Casos', href: '/cases' }]}>
             <Head title="Bandeja de Casos" />
 
-            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
 
                 {/* CABECERA Y FILTROS */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
