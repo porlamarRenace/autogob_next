@@ -44,7 +44,7 @@ export default function RoleForm({ role, groupedPermissions, currentPermissions 
         <AppLayout breadcrumbs={[{ title: 'Roles', href: route('roles.index') }, { title: role ? 'Editar' : 'Crear', href: '#' }]}>
             <Head title={role ? 'Editar Rol' : 'Crear Rol'} />
 
-            <div className="py-8 max-w-5xl mx-auto px-4">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold flex items-center gap-2">
                         <Shield /> {role ? 'Editar Rol' : 'Nuevo Rol'}

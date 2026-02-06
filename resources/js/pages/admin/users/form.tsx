@@ -39,7 +39,7 @@ export default function UserForm({ user, roles }: Props) {
         <AppLayout breadcrumbs={[{ title: 'Usuarios', href: route('users.index') }, { title: user ? 'Editar' : 'Crear', href: '#' }]}>
             <Head title={user ? 'Editar Usuario' : 'Nuevo Usuario'} />
 
-            <div className="py-8 max-w-2xl mx-auto px-4">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold flex items-center gap-2">
                         <UserPlus /> {user ? 'Editar Usuario' : 'Nuevo Usuario'}
