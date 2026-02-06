@@ -53,7 +53,7 @@ export default function Profile({
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Nombre asaasdas</Label>
+                                    <Label htmlFor="name">Nombre</Label>
 
                                     <Input
                                         id="name"
