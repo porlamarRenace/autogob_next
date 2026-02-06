@@ -135,7 +135,7 @@ export default function Dashboard({ stats, recent_cases, is_manager }: Dashboard
 
                     {/* 3. TABLA (Dinámica) */}
                     <Card className="lg:col-span-2 shadow-md">
-                        <CardHeader className="flex flex-row items-center">
+                        <CardHeader className="flex flex-row items-center ">
                             <div className="grid gap-1">
                                 <CardTitle>{is_manager ? 'Actividad Reciente del Sistema' : 'Mis Últimas Cargas'}</CardTitle>
                                 <CardDescription>

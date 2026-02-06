@@ -113,7 +113,7 @@ export default function SuppliesManager({ supplies, filters, parentCategories }:
     return (
         <AppLayout breadcrumbs={[{ title: 'Configuración', href: '#' }, { title: 'Insumos', href: '#' }]}>
             <Head title="Insumos Médicos" />
-            <div className="py-8 max-w-7xl mx-auto px-4">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
 
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                     <h2 className="text-2xl font-bold flex items-center gap-2">

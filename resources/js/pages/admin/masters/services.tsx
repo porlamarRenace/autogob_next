@@ -95,7 +95,7 @@ export default function ServicesManager({ services, institutions, filters }: Pro
     return (
         <AppLayout breadcrumbs={[{ title: 'Configuración', href: '#' }, { title: 'Servicios', href: '#' }]}>
             <Head title="Servicios Médicos" />
-            <div className="py-8 max-w-7xl mx-auto px-4">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
 
                 {/* Header + Buscador */}
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">

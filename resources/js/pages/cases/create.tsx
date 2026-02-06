@@ -92,7 +92,7 @@ export default function CreateCase() {
         <AppLayout breadcrumbs={[{ title: 'Gestión de Casos', href: '#' }, { title: 'Nuevo Caso', href: '#' }]}>
             <Head title="Nuevo Caso" />
 
-            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
 
                 {/* 1. BUSCADOR */}
                 {!citizen && !showRegisterForm && (
