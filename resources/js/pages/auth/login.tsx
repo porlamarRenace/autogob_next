@@ -27,7 +27,7 @@ export default function Login({
             title="Iniciar sesión"
             description="Inicia sesión con tus credenciales"
         >
-            <Head title="Iniciar sesión" />
+            <Head title="Autogob" />
 
             <Form
                 {...store.form()}
