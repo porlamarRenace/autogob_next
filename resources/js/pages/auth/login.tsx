@@ -82,14 +82,16 @@ export default function Login({
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
-                                    className='border border-gray-500 focus:ring-gray-500 dark:border-white dark:focus:ring-white'
+                                    className="border-[#005BBB] data-[state=checked]:bg-[#005BBB] data-[state=checked]:text-white focus-visible:ring-[#005BBB]"
                                 />
-                                <Label htmlFor="remember">Recordarme</Label>
+                                <Label htmlFor="remember" className="cursor-pointer">
+                                    Recordarme
+                                </Label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 w-full bg-[#005BBB] hover:bg-[#004a99] text-white"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
