@@ -132,46 +132,64 @@ export default function SuppliesManager({ supplies, filters, parentCategories }:
 
                 <Card className="shadow-md border-t-4 border-t-blue-600">
                     <CardContent className="p-0">
-                        <Table>
-                            <TableHeader className="bg-slate-50 dark:bg-neutral-800">
-                                <TableRow>
-                                    <TableHead>Nombre Comercial</TableHead>
-                                    <TableHead>Categoría</TableHead>
-                                    <TableHead>Concentración</TableHead>
-                                    <TableHead>Presentación</TableHead>
-                                    <TableHead className="text-right">Acciones</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {supplies.data.length === 0 ? (
-                                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-slate-500">No hay registros.</TableCell></TableRow>
-                                ) : supplies.data.map((sup: any) => (
-                                    <TableRow key={sup.id}>
-                                        <TableCell className="font-medium">{sup.name}</TableCell>
-                                        <TableCell>
-                                            {sup.category ? (
-                                                <div className="flex flex-col gap-0.5">
-                                                    {sup.category.parent && (
-                                                        <span className="text-xs text-slate-400">{sup.category.parent.name}</span>
-                                                    )}
-                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                                                        {sup.category.name}
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <span className="text-slate-400 text-xs">-</span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell>{sup.concentration || '-'}</TableCell>
-                                        <TableCell><span className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs border">{sup.unit}</span></TableCell>
-                                        <TableCell className="text-right">
-                                            <Button variant="ghost" size="icon" onClick={() => openModal(sup)}><Pencil className="h-4 w-4 text-blue-600" /></Button>
-                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(sup.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button>
-                                        </TableCell>
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader className="bg-slate-50 dark:bg-neutral-800">
+                                    <TableRow>
+                                        <TableHead className="w-[40%] sm:w-auto">Nombre Comercial</TableHead>
+                                        <TableHead>Categoría</TableHead>
+                                        <TableHead>Concentración</TableHead>
+                                        <TableHead>Presentación</TableHead>
+                                        <TableHead className="text-right">Acciones</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {supplies.data.length === 0 ? (
+                                        <TableRow><TableCell colSpan={5} className="text-center py-8 text-slate-500">No hay registros.</TableCell></TableRow>
+                                    ) : supplies.data.map((sup: any) => (
+                                        <TableRow key={sup.id}>
+                                            <TableCell className="font-medium align-top sm:align-middle">
+                                                <div className="flex flex-col">
+                                                    <span>{sup.name}</span>
+                                                    <div className="flex flex-col text-xs text-slate-500 mt-0.5 md:hidden">
+                                                        {sup.concentration && (
+                                                            <span className="md:hidden">
+                                                                {sup.concentration}
+                                                            </span>
+                                                        )}
+                                                        <span className="sm:hidden opacity-80">
+                                                            {sup.unit}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="align-top sm:align-middle">
+                                                {sup.category ? (
+                                                    <div className="flex flex-col gap-0.5">
+                                                        {sup.category.parent && (
+                                                            <span className="text-xs text-slate-400">{sup.category.parent.name}</span>
+                                                        )}
+                                                        <span className="inline-flex w-fit items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                            {sup.category.name}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-slate-400 text-xs">-</span>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>{sup.concentration || '-'}</TableCell>
+                                            <TableCell><span className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs border whitespace-nowrap">{sup.unit}</span></TableCell>
+                                            <TableCell className="text-right align-top sm:align-middle">
+                                                <div className="flex justify-end gap-1">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openModal(sup)}><Pencil className="h-4 w-4 text-blue-600" /></Button>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(sup.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
                         <PaginationLinks links={supplies.links} from={supplies.from} to={supplies.to} total={supplies.total} />
                     </CardContent>
                 </Card>
