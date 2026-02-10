@@ -64,7 +64,7 @@ export default function Dashboard({ stats, recent_cases, is_manager }: Dashboard
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0 md:gap-8 md:p-8">
 
                 {/* 1. BIENVENIDA */}
-                <div className={`flex flex-col md:flex-row justify-between items-start md:items-center rounded-xl p-6 text-white shadow-lg ${is_manager ? 'bg-gradient-to-r from-blue-600 to-indigo-700' : 'bg-gradient-to-r from-emerald-600 to-teal-600'}`}>
+                <div className={`flex flex-col md:flex-row justify-between items-start md:items-center rounded-xl p-6 text-white shadow-lg bg-[#005BBB]`}>
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">
                             {getGreeting()}, {auth.user.name.split(' ')[0]}! 👋
