@@ -94,8 +94,7 @@ export default function StockIndex({ supplies, filters, stats }: Props) {
     return (
         <AppLayout breadcrumbs={[{ title: 'Administración', href: '#' }, { title: 'Inventario', href: '#' }]}>
             <Head title="Control de Inventario" />
-            <div className="py-8 max-w-7xl mx-auto px-4">
-
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -220,10 +219,10 @@ export default function StockIndex({ supplies, filters, stats }: Props) {
                                         </TableCell>
                                         <TableCell className="text-center">
                                             <span className={`text-lg font-bold ${supply.current_stock === 0
-                                                    ? 'text-red-600'
-                                                    : supply.is_low_stock
-                                                        ? 'text-amber-600'
-                                                        : 'text-emerald-600'
+                                                ? 'text-red-600'
+                                                : supply.is_low_stock
+                                                    ? 'text-amber-600'
+                                                    : 'text-emerald-600'
                                                 }`}>
                                                 {supply.current_stock}
                                             </span>
