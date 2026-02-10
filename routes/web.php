@@ -137,7 +137,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Reports
         Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
-        Route::get('reports/case/{case}/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'caseDetail'])->name('reports.case.pdf');
         Route::get('reports/citizen/{citizen}/expedient-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'citizenExpedient'])->name('reports.citizen.pdf');
         Route::get('reports/approved-aids', [\App\Http\Controllers\Admin\ReportController::class, 'approvedAids'])->name('reports.approved-aids');
         
@@ -149,7 +148,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('reports/stock', [\App\Http\Controllers\Admin\ReportController::class, 'stockReport'])->name('reports.stock');
         Route::get('reports/stock/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'stockReportPdf'])->name('reports.stock.pdf');
     });
-
+    Route::get('admin/reports/case/{case}/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'caseDetail'])->name('reports.case.pdf');
     // Reportes de actividad - accesibles para operadores también (fuera del middleware admin)
     Route::get('reports/activity', [\App\Http\Controllers\Admin\ReportController::class, 'activityReport'])
         ->name('reports.activity')
