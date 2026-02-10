@@ -232,295 +232,297 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
         <AppLayout>
             <Head title="Mis Asignaciones" />
 
-            <div className="space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold">Mis Asignaciones</h1>
-                        <p className="text-muted-foreground">
-                            Gestiona los casos e items asignados a ti
-                        </p>
-                    </div>
-                    <Button onClick={downloadPDF}>
-                        <FileDown className="h-4 w-4 mr-2" />
-                        Descargar PDF
-                    </Button>
-                </div>
-
-                {/* Filtros */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Filter className="h-5 w-5" />
-                            Filtros
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            <div>
-                                <Label>Tipo</Label>
-                                <Select value={typeFilter} onValueChange={setTypeFilter}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Todos" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Todos</SelectItem>
-                                        <SelectItem value="cases">Solo Casos</SelectItem>
-                                        <SelectItem value="items">Solo Items</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div>
-                                <Label>Status</Label>
-                                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Todos" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Todos</SelectItem>
-                                        <SelectItem value="pending">Pendientes</SelectItem>
-                                        <SelectItem value="approved">Aprobados</SelectItem>
-                                        <SelectItem value="rejected">Rechazados</SelectItem>
-                                        <SelectItem value="closed">Cerrados</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div>
-                                <Label>Fecha Inicio</Label>
-                                <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                            </div>
-                            <div>
-                                <Label>Fecha Fin</Label>
-                                <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                            </div>
-                            <div className="flex items-end gap-2">
-                                <Button onClick={applyFilters} className="flex-1">Aplicar</Button>
-                                <Button onClick={clearFilters} variant="outline">Limpiar</Button>
-                            </div>
+            <div className="bg-slate-50/50 min-h-screen">
+                <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-3xl font-bold">Mis Asignaciones</h1>
+                            <p className="text-muted-foreground">
+                                Gestiona los casos e items asignados a ti
+                            </p>
                         </div>
-                    </CardContent>
-                </Card>
+                        <Button onClick={downloadPDF}>
+                            <FileDown className="h-4 w-4 mr-2" />
+                            Descargar PDF
+                        </Button>
+                    </div>
 
-                {/* Estadísticas */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Casos Asignados</CardTitle>
-                            <FileText className="h-4 w-4 text-muted-foreground" />
+                    {/* Filtros */}
+                    <Card className="shadow-sm border-slate-200">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Filter className="h-5 w-5" />
+                                Filtros
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.total_cases}</div>
-                            <p className="text-xs text-muted-foreground">
-                                {stats.pending_cases} pendientes
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Items Asignados</CardTitle>
-                            <Package className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.total_items}</div>
-                            <p className="text-xs text-muted-foreground">
-                                {stats.pending_items} pendientes
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Pendientes</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">
-                                {stats.pending_cases + stats.pending_items}
+                            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                <div>
+                                    <Label>Tipo</Label>
+                                    <Select value={typeFilter} onValueChange={setTypeFilter}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Todos" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Todos</SelectItem>
+                                            <SelectItem value="cases">Solo Casos</SelectItem>
+                                            <SelectItem value="items">Solo Items</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Label>Status</Label>
+                                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Todos" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Todos</SelectItem>
+                                            <SelectItem value="pending">Pendientes</SelectItem>
+                                            <SelectItem value="approved">Aprobados</SelectItem>
+                                            <SelectItem value="rejected">Rechazados</SelectItem>
+                                            <SelectItem value="closed">Cerrados</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Label>Fecha Inicio</Label>
+                                    <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                                </div>
+                                <div>
+                                    <Label>Fecha Fin</Label>
+                                    <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                                </div>
+                                <div className="flex items-end gap-2">
+                                    <Button onClick={applyFilters} className="flex-1">Aplicar</Button>
+                                    <Button onClick={clearFilters} variant="outline">Limpiar</Button>
+                                </div>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Requieren atención
-                            </p>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Tasa de Aprobación</CardTitle>
-                            <CheckSquare className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.approved_rate}%</div>
-                            <p className="text-xs text-muted-foreground">
-                                Items aprobados
-                            </p>
-                        </CardContent>
-                    </Card>
+
+                    {/* Estadísticas */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Card className="shadow-sm border-slate-200">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Casos Asignados</CardTitle>
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.total_cases}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.pending_cases} pendientes
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-sm border-slate-200">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Items Asignados</CardTitle>
+                                <Package className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.total_items}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.pending_items} pendientes
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-sm border-slate-200">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Total Pendientes</CardTitle>
+                                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {stats.pending_cases + stats.pending_items}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Requieren atención
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-sm border-slate-200">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Tasa de Aprobación</CardTitle>
+                                <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.approved_rate}%</div>
+                                <p className="text-xs text-muted-foreground">
+                                    Items aprobados
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Tabs de contenido */}
+                    <Tabs defaultValue="cases" className="space-y-4">
+                        <TabsList>
+                            <TabsTrigger value="cases">Casos Completos ({assignedCases.total})</TabsTrigger>
+                            <TabsTrigger value="items">Items Individuales ({assignedItems.total})</TabsTrigger>
+                        </TabsList>
+
+                        {/* Tab de Casos */}
+                        <TabsContent value="cases" className="space-y-4">
+                            <Card className="shadow-sm border-slate-200">
+                                <CardHeader>
+                                    <CardTitle>Casos Asignados</CardTitle>
+                                    <CardDescription>Casos completos asignados para tu revisión</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    {assignedCases.data.length === 0 ? (
+                                        <p className="text-center text-muted-foreground py-8">
+                                            No tienes casos asignados
+                                        </p>
+                                    ) : (
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Caso #</TableHead>
+                                                    <TableHead>Beneficiario</TableHead>
+                                                    <TableHead>Categoría</TableHead>
+                                                    <TableHead>Items</TableHead>
+                                                    <TableHead>Fecha</TableHead>
+                                                    <TableHead>Estado</TableHead>
+                                                    <TableHead className="text-right">Acciones</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {assignedCases.data.map((caso) => (
+                                                    <TableRow key={caso.id}>
+                                                        <TableCell className="font-medium">{caso.case_number}</TableCell>
+                                                        <TableCell>
+                                                            {caso.beneficiary.first_name} {caso.beneficiary.last_name}
+                                                        </TableCell>
+                                                        <TableCell>{caso.category.name}</TableCell>
+                                                        <TableCell>{caso.items.length} items</TableCell>
+                                                        <TableCell>
+                                                            {format(new Date(caso.created_at), "d 'de' MMM, yyyy", { locale: es })}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge className={statusColors[caso.status]}>
+                                                                {statusLabels[caso.status] || caso.status}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="text-right space-x-2">
+                                                            {(caso.status === 'pending' || caso.status === 'in_progress' || caso.status === 'open') && (
+                                                                <>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        onClick={() => handleApproveCase(caso.id)}
+                                                                    >
+                                                                        <CheckCircle className="h-4 w-4 mr-1" />
+                                                                        Aprobar Todo
+                                                                    </Button>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="destructive"
+                                                                        onClick={() => openRejectDialog('case', caso.id)}
+                                                                    >
+                                                                        <XCircle className="h-4 w-4 mr-1" />
+                                                                        Rechazar
+                                                                    </Button>
+                                                                </>
+                                                            )}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+
+                        {/* Tab de Items */}
+                        <TabsContent value="items" className="space-y-4">
+                            <Card className="shadow-sm border-slate-200">
+                                <CardHeader>
+                                    <CardTitle>Items Individuales</CardTitle>
+                                    <CardDescription>Items específicos asignados para tu aprobación</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    {assignedItems.data.length === 0 ? (
+                                        <p className="text-center text-muted-foreground py-8">
+                                            No tienes items asignados
+                                        </p>
+                                    ) : (
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Caso #</TableHead>
+                                                    <TableHead>Beneficiario</TableHead>
+                                                    <TableHead>Item</TableHead>
+                                                    <TableHead>Cantidad</TableHead>
+                                                    <TableHead>Fecha</TableHead>
+                                                    <TableHead>Estado</TableHead>
+                                                    <TableHead className="text-right">Acciones</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {assignedItems.data.map((item) => (
+                                                    <TableRow key={item.id}>
+                                                        <TableCell className="font-medium">
+                                                            {item.social_case?.case_number}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {item.social_case?.beneficiary.first_name}{' '}
+                                                            {item.social_case?.beneficiary.last_name}
+                                                        </TableCell>
+                                                        <TableCell>{item.itemable.name}</TableCell>
+                                                        <TableCell>{item.quantity}</TableCell>
+                                                        <TableCell>
+                                                            {format(new Date(item.created_at), "d 'de' MMM, yyyy", { locale: es })}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge className={statusColors[item.status]}>
+                                                                {statusLabels[item.status] || item.status}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="text-right space-x-2">
+                                                            {(item.status === 'pending' || item.status === 'in_progress' || item.status === 'open') && (
+                                                                <>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        onClick={() => handleApproveItem(item.id)}
+                                                                    >
+                                                                        <CheckCircle className="h-4 w-4 mr-1" />
+                                                                        Aprobar
+                                                                    </Button>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="destructive"
+                                                                        onClick={() => openRejectDialog('item', item.id)}
+                                                                    >
+                                                                        <XCircle className="h-4 w-4 mr-1" />
+                                                                        Rechazar
+                                                                    </Button>
+                                                                </>
+                                                            )}
+                                                            {item.status === 'approved' && (
+                                                                <Button
+                                                                    size="sm"
+                                                                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                                                                    onClick={() => handleFulfillItem(item.id)}
+                                                                >
+                                                                    <Gift className="h-4 w-4 mr-1" />
+                                                                    Entregado
+                                                                </Button>
+                                                            )}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
                 </div>
-
-                {/* Tabs de contenido */}
-                <Tabs defaultValue="cases" className="space-y-4">
-                    <TabsList>
-                        <TabsTrigger value="cases">Casos Completos ({assignedCases.total})</TabsTrigger>
-                        <TabsTrigger value="items">Items Individuales ({assignedItems.total})</TabsTrigger>
-                    </TabsList>
-
-                    {/* Tab de Casos */}
-                    <TabsContent value="cases" className="space-y-4">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Casos Asignados</CardTitle>
-                                <CardDescription>Casos completos asignados para tu revisión</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {assignedCases.data.length === 0 ? (
-                                    <p className="text-center text-muted-foreground py-8">
-                                        No tienes casos asignados
-                                    </p>
-                                ) : (
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Caso #</TableHead>
-                                                <TableHead>Beneficiario</TableHead>
-                                                <TableHead>Categoría</TableHead>
-                                                <TableHead>Items</TableHead>
-                                                <TableHead>Fecha</TableHead>
-                                                <TableHead>Estado</TableHead>
-                                                <TableHead className="text-right">Acciones</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {assignedCases.data.map((caso) => (
-                                                <TableRow key={caso.id}>
-                                                    <TableCell className="font-medium">{caso.case_number}</TableCell>
-                                                    <TableCell>
-                                                        {caso.beneficiary.first_name} {caso.beneficiary.last_name}
-                                                    </TableCell>
-                                                    <TableCell>{caso.category.name}</TableCell>
-                                                    <TableCell>{caso.items.length} items</TableCell>
-                                                    <TableCell>
-                                                        {format(new Date(caso.created_at), "d 'de' MMM, yyyy", { locale: es })}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge className={statusColors[caso.status]}>
-                                                            {statusLabels[caso.status] || caso.status}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell className="text-right space-x-2">
-                                                        {(caso.status === 'pending' || caso.status === 'in_progress' || caso.status === 'open') && (
-                                                            <>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => handleApproveCase(caso.id)}
-                                                                >
-                                                                    <CheckCircle className="h-4 w-4 mr-1" />
-                                                                    Aprobar Todo
-                                                                </Button>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="destructive"
-                                                                    onClick={() => openRejectDialog('case', caso.id)}
-                                                                >
-                                                                    <XCircle className="h-4 w-4 mr-1" />
-                                                                    Rechazar
-                                                                </Button>
-                                                            </>
-                                                        )}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    {/* Tab de Items */}
-                    <TabsContent value="items" className="space-y-4">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Items Individuales</CardTitle>
-                                <CardDescription>Items específicos asignados para tu aprobación</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {assignedItems.data.length === 0 ? (
-                                    <p className="text-center text-muted-foreground py-8">
-                                        No tienes items asignados
-                                    </p>
-                                ) : (
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Caso #</TableHead>
-                                                <TableHead>Beneficiario</TableHead>
-                                                <TableHead>Item</TableHead>
-                                                <TableHead>Cantidad</TableHead>
-                                                <TableHead>Fecha</TableHead>
-                                                <TableHead>Estado</TableHead>
-                                                <TableHead className="text-right">Acciones</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {assignedItems.data.map((item) => (
-                                                <TableRow key={item.id}>
-                                                    <TableCell className="font-medium">
-                                                        {item.social_case?.case_number}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {item.social_case?.beneficiary.first_name}{' '}
-                                                        {item.social_case?.beneficiary.last_name}
-                                                    </TableCell>
-                                                    <TableCell>{item.itemable.name}</TableCell>
-                                                    <TableCell>{item.quantity}</TableCell>
-                                                    <TableCell>
-                                                        {format(new Date(item.created_at), "d 'de' MMM, yyyy", { locale: es })}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge className={statusColors[item.status]}>
-                                                            {statusLabels[item.status] || item.status}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell className="text-right space-x-2">
-                                                        {(item.status === 'pending' || item.status === 'in_progress' || item.status === 'open') && (
-                                                            <>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => handleApproveItem(item.id)}
-                                                                >
-                                                                    <CheckCircle className="h-4 w-4 mr-1" />
-                                                                    Aprobar
-                                                                </Button>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="destructive"
-                                                                    onClick={() => openRejectDialog('item', item.id)}
-                                                                >
-                                                                    <XCircle className="h-4 w-4 mr-1" />
-                                                                    Rechazar
-                                                                </Button>
-                                                            </>
-                                                        )}
-                                                        {item.status === 'approved' && (
-                                                            <Button
-                                                                size="sm"
-                                                                className="bg-purple-600 hover:bg-purple-700 text-white"
-                                                                onClick={() => handleFulfillItem(item.id)}
-                                                            >
-                                                                <Gift className="h-4 w-4 mr-1" />
-                                                                Entregado
-                                                            </Button>
-                                                        )}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
             </div>
 
             {/* Modal de Rechazo */}
