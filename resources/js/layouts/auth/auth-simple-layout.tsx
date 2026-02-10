@@ -19,7 +19,7 @@ export default function AuthSimpleLayout({
                         >
                             <div className="mb-0 flex h-48 w-48 items-center justify-center rounded-md">
                                 <img
-                                    src="/ALCALDÍA DE MARIÑO- 01.png"
+                                    src="/AlcaldiaLogo.png"
                                     alt="Logo Alcaldía de Mariño"
                                     className="h-full w-full object-contain"
                                 />
