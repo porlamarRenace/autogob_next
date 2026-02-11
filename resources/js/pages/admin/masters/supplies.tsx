@@ -122,7 +122,9 @@ export default function SuppliesManager({ supplies, filters, parentCategories }:
                     <div className="flex gap-2 w-full sm:w-auto">
                         <div className="relative w-full sm:w-64">
                             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                            <Input placeholder="Buscar insumo..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+                            <Input 
+                            className="pl-9 focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+                            placeholder="Buscar insumo..." value={search} onChange={e => setSearch(e.target.value)} />
                         </div>
                         <Button onClick={() => openModal()} className="bg-blue-600 hover:bg-blue-700">
                             <Plus className="mr-2 h-4 w-4" /> Nuevo
@@ -249,18 +251,24 @@ export default function SuppliesManager({ supplies, filters, parentCategories }:
 
                             <div>
                                 <Label>Nombre *</Label>
-                                <Input value={data.name} onChange={e => setData('name', e.target.value)} required />
+                                <Input 
+                                className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+                                value={data.name} onChange={e => setData('name', e.target.value)} required />
                                 {errors.name && <span className="text-red-500 text-xs">{errors.name}</span>}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <Label>Concentración (Opcional)</Label>
-                                    <Input value={data.concentration} onChange={e => setData('concentration', e.target.value)} placeholder="Ej: 500mg" />
+                                    <Input 
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+                                    value={data.concentration} onChange={e => setData('concentration', e.target.value)} placeholder="Ej: 500mg" />
                                 </div>
                                 <div>
                                     <Label>Unidad/Presentación *</Label>
-                                    <Input value={data.unit} onChange={e => setData('unit', e.target.value)} placeholder="Ej: Caja, Blister" required />
+                                    <Input 
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+                                    value={data.unit} onChange={e => setData('unit', e.target.value)} placeholder="Ej: Caja, Blister" required />
                                     {errors.unit && <span className="text-red-500 text-xs">{errors.unit}</span>}
                                 </div>
                             </div>

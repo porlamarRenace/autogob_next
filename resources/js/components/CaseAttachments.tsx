@@ -217,7 +217,7 @@ export default function CaseAttachments({
                                 placeholder="Descripción del archivo (opcional)"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className="flex-1"
+                                className="flex-1 focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
                                 disabled={uploading}
                             />
                         </div>
