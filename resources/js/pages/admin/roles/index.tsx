@@ -45,15 +45,19 @@ export default function RoleIndex({ roles }: Props) {
             <Head title="Gestión de Roles" />
 
             <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <Shield className="text-blue-600" /> Roles del Sistema
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div className="text-center md:text-left">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center md:justify-start gap-2">
+                            <Shield className="text-blue-600 shrink-0" /> 
+                            <span>Roles del Sistema</span>
                         </h2>
-                        <p className="text-sm text-slate-500">Defina qué pueden hacer los usuarios en la plataforma.</p>
+                        <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto md:mx-0">
+                            Defina qué pueden hacer los usuarios en la plataforma.
+                        </p>
                     </div>
-                    <Link href={route('roles.create')}>
-                        <Button className="bg-blue-600 hover:bg-blue-700">
+
+                    <Link href={route('roles.create')} className="w-full md:w-auto">
+                        <Button className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto justify-center shadow-md transition-all active:scale-95">
                             <Plus className="mr-2 h-4 w-4" /> Crear Nuevo Rol
                         </Button>
                     </Link>

@@ -48,15 +48,19 @@ export default function UserIndex({ users }: Props) {
             <Head title="Gestión de Usuarios" />
 
             <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <Users className="text-purple-600" /> Usuarios del Sistema
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div className="text-center md:text-left">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center md:justify-start gap-2">
+                            <Users className="text-purple-600 shrink-0" /> 
+                            <span>Usuarios del Sistema</span>
                         </h2>
-                        <p className="text-sm text-slate-500">Gestione el acceso y roles del personal.</p>
+                        <p className="text-sm text-slate-500 mt-1">
+                            Gestione el acceso y roles del personal.
+                        </p>
                     </div>
-                    <Link href={route('users.create')}>
-                        <Button className="bg-purple-600 hover:bg-purple-700">
+
+                    <Link href={route('users.create')} className="w-full md:w-auto">
+                        <Button className="bg-purple-600 hover:bg-purple-700 w-full md:w-auto justify-center shadow-md transition-transform active:scale-95">
                             <Plus className="mr-2 h-4 w-4" /> Registrar Usuario
                         </Button>
                     </Link>

@@ -53,9 +53,12 @@ export default function StockReport({ items, filters }: Props) {
 
             <div className="bg-slate-50/50 min-h-screen">
                 <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold">Reporte de Stock</h1>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        {/* Contenedor de Texto */}
+                        <div className="space-y-1 text-center md:text-left">
+                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                Reporte de Stock
+                            </h1>
                             <p className="text-muted-foreground">
                                 Items entregados por rango de fechas
                             </p>
