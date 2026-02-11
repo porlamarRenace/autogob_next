@@ -197,10 +197,10 @@ export default function Review({ socialCase, specialists, can }: Props) {
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <Button 
-                        variant="outline" 
-                        asChild 
-                        className="bg-[#ED2224] hover:bg-[#D11B1D] text-white hover:text-white border-none font-medium shadow-sm transition-all active:scale-95"
+                        <Button
+                            variant="outline"
+                            asChild
+                            className="bg-[#ED2224] hover:bg-[#D11B1D] text-white hover:text-white border-none font-medium shadow-sm transition-all active:scale-95"
                         >
                             <a href={route('reports.case.pdf', socialCase.id)} target="_blank" rel="noopener noreferrer">
                                 <Download className="mr-2 h-4 w-4" /> Descargar PDF
@@ -225,6 +225,15 @@ export default function Review({ socialCase, specialists, can }: Props) {
                             <CardContent className="text-sm space-y-2">
                                 <div className="text-lg font-medium">{socialCase.citizen.first_name} {socialCase.citizen.last_name}</div>
                                 <div className="font-mono text-slate-500">{socialCase.citizen.nationality}-{socialCase.citizen.identification_value}</div>
+                                {socialCase.citizen.age !== null && socialCase.citizen.age !== undefined && (
+                                    <div className="text-slate-600 dark:text-slate-400">Edad: <span className="font-semibold">{socialCase.citizen.age} años</span></div>
+                                )}
+                                {socialCase.description && (
+                                    <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                                        <span className="text-xs font-bold text-slate-400 uppercase">Observación del caso</span>
+                                        <p className="text-slate-600 dark:text-slate-300 mt-0.5">{socialCase.description}</p>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
 

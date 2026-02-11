@@ -215,6 +215,7 @@ class CaseController extends Controller
         }
         $case = SocialCase::with([
             'citizen.street.community.municipality',    
+            'beneficiary', // Cargar beneficiario con edad (birth_date)
             'items.assignedTo', // Cargar asignado del item
             'items.itemable' => function ($morphTo) {
                 $morphTo->morphWith([

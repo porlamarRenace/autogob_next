@@ -125,6 +125,12 @@
                         {{ $case->beneficiary->phone }}
                     </div>
                     <div class="info-cell">
+                        <span class="label">EDAD</span>
+                        {{ $case->beneficiary->age !== null ? $case->beneficiary->age . ' años' : 'No registrada' }}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-cell">
                         <span class="label">DIRECCIÓN</span>
                         @if($case->beneficiary->street)
                             {{ $case->beneficiary->street->name }}, 

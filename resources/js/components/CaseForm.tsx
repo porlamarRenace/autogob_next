@@ -77,17 +77,20 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
 
     // --- EFECTO: BÚSQUEDA AUTOMÁTICA ---
     useEffect(() => {
-        if (debouncedSearchTerm.length >= 2 && subcategoryId) {
+        if (debouncedSearchTerm.length >= 2 && categoryId) {
             setIsSearching(true);
             setShowResults(true);
 
-            axios.get(route('cases.search-items'), {
-                params: {
-                    query: debouncedSearchTerm,
-                    type: searchType,
-                    subcategory_id: subcategoryId  // Filtrar por subcategoría seleccionada
-                }
-            })
+            const params: any = {
+                query: debouncedSearchTerm,
+                type: searchType,
+            };
+            // Filtrar por subcategoría solo si está seleccionada (opcional)
+            if (subcategoryId) {
+                params.subcategory_id = subcategoryId;
+            }
+
+            axios.get(route('cases.search-items'), { params })
                 .then(res => setSearchResults(res.data))
                 .catch(() => setSearchResults([]))
                 .finally(() => setIsSearching(false));
@@ -95,7 +98,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
             setSearchResults([]);
             setShowResults(false);
         }
-    }, [debouncedSearchTerm, searchType, subcategoryId]); // Se ejecuta cuando cambia el texto, tipo o subcategoría
+    }, [debouncedSearchTerm, searchType, categoryId, subcategoryId]); // Se ejecuta cuando cambia el texto, tipo, categoría o subcategoría
 
     // Click Outside para cerrar resultados
     useEffect(() => {
@@ -111,7 +114,6 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
     const handleCategoryChange = (val: string) => {
         setCategoryId(val);
         setSubcategoryId('');
-        setItems([]);
         setDescription(''); // Limpiar observaciones al cambiar categoría (Req. 7)
         setSearchTerm('');  // Limpiar búsqueda
         setSearchResults([]);
@@ -254,7 +256,7 @@ export default function CaseForm({ citizen, onSuccess }: Props) {
                     <div className="h-px bg-slate-200"></div>
 
                     {/* --- ZONA DE BÚSQUEDA --- */}
-                    <div className={`space-y-3 transition-opacity ${!subcategoryId ? 'opacity-40 pointer-events-none' : ''}`}>
+                    <div className={`space-y-3 transition-opacity ${!categoryId ? 'opacity-40 pointer-events-none' : ''}`}>
                         <Label>Agregar Ítems a la Solicitud</Label>
 
                         {/* Selector de Tipo (Tabs) - Siempre visible cuando hay subcategoría */}

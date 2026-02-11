@@ -40,7 +40,7 @@ class ReportController extends Controller
             'applicant:id,first_name,last_name,nationality,identification_value,phone',
             'applicant.street:id,name,community_id',
             'applicant.street.community:id,name',
-            'beneficiary:id,first_name,last_name,nationality,identification_value,phone,street_id',
+            'beneficiary:id,first_name,last_name,nationality,identification_value,phone,street_id,birth_date',
             'beneficiary.street:id,name,community_id',
             'beneficiary.street.community:id,name',
             'creator:id,name',
