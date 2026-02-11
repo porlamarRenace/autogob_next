@@ -164,7 +164,13 @@ export default function CreateCase() {
                                         </Button>
                                     </div>
                                 )}
-                                <Button variant="link" className="px-0 text-red-600 dark:text-red-400 h-auto" onClick={() => { setCitizen(null); setProfileComplete(true); }}>Cambiar Beneficiario</Button>
+                              <Button 
+                                  variant="destructive" 
+                                  className="bg-[#ED2224] hover:bg-[#D11B1D] text-white px-4 py-2 h-auto shadow-sm transition-all active:scale-95" 
+                                  onClick={() => { setCitizen(null); setProfileComplete(true); }}
+                                >
+                                  Cambiar Beneficiario
+                                </Button>
                             </CardContent>
                         </Card>
 

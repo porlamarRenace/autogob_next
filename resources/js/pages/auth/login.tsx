@@ -48,6 +48,7 @@ export default function Login({
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="correo@ejemplo.com"
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB]"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -73,6 +74,7 @@ export default function Login({
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Contraseña"
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB]"
                                 />
                                 <InputError message={errors.password} />
                             </div>

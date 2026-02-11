@@ -58,13 +58,17 @@ export default function UserForm({ user, roles }: Props) {
 
                             <div>
                                 <Label>Nombre Completo</Label>
-                                <Input value={data.name} onChange={e => setData('name', e.target.value)} required />
+                                <Input 
+                                className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+                                value={data.name} onChange={e => setData('name', e.target.value)} required />
                                 {errors.name && <span className="text-red-500 text-xs">{errors.name}</span>}
                             </div>
 
                             <div>
                                 <Label>Correo Electrónico</Label>
-                                <Input type="email" value={data.email} onChange={e => setData('email', e.target.value)} required />
+                                <Input type="email" 
+                                className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+                                value={data.email} onChange={e => setData('email', e.target.value)} required />
                                 {errors.email && <span className="text-red-500 text-xs">{errors.email}</span>}
                             </div>
 
@@ -91,6 +95,7 @@ export default function UserForm({ user, roles }: Props) {
                                 <Label>{user ? 'Nueva Contraseña (Dejar en blanco para mantener)' : 'Contraseña'}</Label>
                                 <Input
                                     type="password"
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
                                     value={data.password}
                                     onChange={e => setData('password', e.target.value)}
                                     required={!user} // Obligatorio solo al crear
