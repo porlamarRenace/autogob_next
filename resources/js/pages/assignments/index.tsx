@@ -242,7 +242,10 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
                                 Gestiona los casos e items asignados a ti
                             </p>
                         </div>
-                        <Button onClick={downloadPDF}>
+                        <Button
+                            onClick={downloadPDF}
+                            className="bg-[#ED2224] hover:bg-[#D11B1D] text-white font-medium shadow-sm transition-all active:scale-95"
+                        >
                             <FileDown className="h-4 w-4 mr-2" />
                             Descargar PDF
                         </Button>

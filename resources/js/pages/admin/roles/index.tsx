@@ -73,7 +73,7 @@ export default function RoleIndex({ roles }: Props) {
                             </TableHeader>
                             <TableBody>
                                 {roles.map((role) => (
-                                    <TableRow key={role.id} className="hover:bg-slate-50/50 dark:hover:bg-neutral-700">
+                                    <TableRow key={role.id} className="hover:bg-slate-50/50 dark:hover:bg-neutral-700 [&_td]:py-4">
                                         <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">#{role.id}</TableCell>
                                         <TableCell className="dark:text-slate-200">
                                             <div className="font-bold text-slate-800 uppercase flex items-center gap-2 dark:text-slate-200">

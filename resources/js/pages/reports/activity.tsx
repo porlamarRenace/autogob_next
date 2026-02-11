@@ -110,7 +110,10 @@ export default function ActivityReport({ stats, cases, filters, is_manager }: Pr
                                     : 'Resumen de tus casos creados'}
                             </p>
                         </div>
-                        <Button onClick={downloadPdf}>
+                        <Button
+                            onClick={downloadPdf}
+                            className="bg-[#ED2224] hover:bg-[#D11B1D] text-white font-medium shadow-sm transition-all active:scale-95"
+                        >   
                             <FileDown className="h-4 w-4 mr-2" />
                             Descargar PDF
                         </Button>
