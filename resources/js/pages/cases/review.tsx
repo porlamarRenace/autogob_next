@@ -197,7 +197,11 @@ export default function Review({ socialCase, specialists, can }: Props) {
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="outline" asChild>
+                        <Button 
+                        variant="outline" 
+                        asChild 
+                        className="bg-[#ED2224] hover:bg-[#D11B1D] text-white hover:text-white border-none font-medium shadow-sm transition-all active:scale-95"
+                        >
                             <a href={route('reports.case.pdf', socialCase.id)} target="_blank" rel="noopener noreferrer">
                                 <Download className="mr-2 h-4 w-4" /> Descargar PDF
                             </a>
@@ -324,7 +328,7 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                                             </div>
                                                             <Input
                                                                 placeholder="Nota (Ej: Sin stock)..."
-                                                                className="mt-2 h-7 text-xs border-slate-200"
+                                                                className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
                                                                 value={item.review_note}
                                                                 onChange={(e) => {
                                                                     const up = [...itemsReview];
@@ -342,7 +346,7 @@ export default function Review({ socialCase, specialists, can }: Props) {
                                                         <TableCell className="text-center align-top pt-3">
                                                             <Input
                                                                 type="number"
-                                                                className={`h-9 text-center font-bold ${item.status === 'rejected' ? 'text-slate-300 bg-slate-50' :
+                                                                className={`h-9 text-center font-bold focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset] ${item.status === 'rejected' ? 'text-slate-300 bg-slate-50' :
                                                                     item.approved_qty < item.requested_qty ? 'text-orange-600 border-orange-300' : 'text-green-600'
                                                                     }`}
                                                                 value={item.approved_qty}

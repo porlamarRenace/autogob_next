@@ -150,6 +150,7 @@ export default function CitizensList({ citizens, search: initialSearch }: Props)
                                                     <Button
                                                         size="sm"
                                                         variant="default"
+                                                        className="bg-[#ED2224] hover:bg-[#D11B1D] text-white border-none font-medium shadow-sm transition-all active:scale-95"
                                                         onClick={() => window.open(route('reports.citizen.pdf', citizen.id), '_blank')}
                                                     >
                                                         <FileDown className="h-4 w-4 mr-1" />

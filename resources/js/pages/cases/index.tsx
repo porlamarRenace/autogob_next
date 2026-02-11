@@ -98,7 +98,8 @@ export default function CaseIndex({ cases, filters }: Props) {
                                 placeholder="Buscar folio, cédula..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="pl-9"
+                                className="pl-9 focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+
                             />
                         </div>
                     </div>

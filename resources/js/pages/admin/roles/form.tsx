@@ -66,7 +66,7 @@ export default function RoleForm({ role, groupedPermissions, currentPermissions 
                                     value={data.name}
                                     onChange={e => setData('name', e.target.value)}
                                     placeholder="Ej: Gerente de Salud"
-                                    className="mt-1"
+                                    className="mt-1 focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
                                 />
                                 {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
                             </div>

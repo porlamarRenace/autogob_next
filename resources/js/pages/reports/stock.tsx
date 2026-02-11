@@ -60,7 +60,10 @@ export default function StockReport({ items, filters }: Props) {
                                 Items entregados por rango de fechas
                             </p>
                         </div>
-                        <Button onClick={downloadPdf}>
+                        <Button
+                            onClick={downloadPdf}
+                            className="bg-[#ED2224] hover:bg-[#D11B1D] text-white font-medium shadow-sm transition-all active:scale-95"
+                        >
                             <FileDown className="h-4 w-4 mr-2" />
                             Descargar PDF
                         </Button>

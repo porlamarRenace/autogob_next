@@ -146,7 +146,7 @@ export default function CitizenSearch({ onCitizenFound, onReset, onNotFound }: P
                             value={identificationValue}
                             onChange={(e) => setIdentificationValue(e.target.value)}
                             placeholder="Ej: 12345678"
-                            className="text-base bg-white" 
+                            className="text-base bg-white focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB]"
                             autoFocus
                         />
                     </div>
