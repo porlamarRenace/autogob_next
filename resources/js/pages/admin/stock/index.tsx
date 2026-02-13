@@ -150,7 +150,7 @@ export default function StockIndex({ supplies, filters, stats }: Props) {
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                                    className="pl-9"
+                                    className="pl-9 focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
                                 />
                             </div>
                             <label className="flex items-center gap-2 cursor-pointer">
@@ -296,6 +296,7 @@ export default function StockIndex({ supplies, filters, stats }: Props) {
                                     value={entryForm.data.quantity}
                                     onChange={e => entryForm.setData('quantity', e.target.value)}
                                     required
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
                                 />
                             </div>
                             <div>
@@ -316,6 +317,7 @@ export default function StockIndex({ supplies, filters, stats }: Props) {
                                     value={entryForm.data.notes}
                                     onChange={e => entryForm.setData('notes', e.target.value)}
                                     placeholder="Ej: Factura #12345, Donación de ONG..."
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset] min-h-[100px]"
                                 />
                             </div>
                             <div className="flex justify-end gap-2">
@@ -349,6 +351,7 @@ export default function StockIndex({ supplies, filters, stats }: Props) {
                                     value={exitForm.data.quantity}
                                     onChange={e => exitForm.setData('quantity', e.target.value)}
                                     required
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
                                 />
                             </div>
                             <div>
@@ -368,6 +371,7 @@ export default function StockIndex({ supplies, filters, stats }: Props) {
                                     value={exitForm.data.notes}
                                     onChange={e => exitForm.setData('notes', e.target.value)}
                                     placeholder="Explique el motivo de la salida..."
+                                    className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset] min-h-[100px]"
                                 />
                             </div>
                             <div className="flex justify-end gap-2">

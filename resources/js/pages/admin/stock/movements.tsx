@@ -43,7 +43,7 @@ export default function StockMovements({ supply, movements }: Props) {
             { title: 'Movimientos', href: '#' }
         ]}>
             <Head title={`Movimientos - ${supply.name}`} />
-            <div className="py-8 max-w-7xl mx-auto px-4">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
 
                 <div className="flex items-center gap-4 mb-6">
                     <Button variant="outline" size="icon" asChild>

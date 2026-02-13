@@ -129,7 +129,14 @@ export default function CategoriesManager({ categories, parents }: any) {
                     <DialogContent>
                         <DialogHeader><DialogTitle>{editingItem ? 'Editar Categoría' : 'Nueva Categoría'}</DialogTitle></DialogHeader>
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div><Label>Nombre</Label><Input value={data.name} onChange={e => setData('name', e.target.value)} required /></div>
+                            <div><Label>Nombre</Label><Input 
+                                        id="name"
+                                        value={data.name} 
+                                        onChange={e => setData('name', e.target.value)} 
+                                        required 
+                                        className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+                                    />
+                                </div>
                             <div>
                                 <Label>Categoría Padre (Opcional)</Label>
                                 <Select value={data.parent_id} onValueChange={v => setData('parent_id', v)}>
