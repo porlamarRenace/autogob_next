@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FileDown, Calendar } from 'lucide-react';
+import { FileDown, Calendar,PackageSearch } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -53,10 +53,16 @@ export default function StockReport({ items, filters }: Props) {
 
             <div className="bg-slate-50/50 min-h-screen">
                 <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold">Reporte de Stock</h1>
-                            <p className="text-muted-foreground">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        {/* Contenedor de Texto */}
+                        <div className="space-y-1 text-center md:text-left">
+                            <div className="flex items-center gap-3">
+                                <PackageSearch className="h-8 w-8 text-red-600" />
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    Reporte de Stock
+                                </h1>
+                            </div>
+                            <p className="text-muted-foreground ml-11">
                                 Items entregados por rango de fechas
                             </p>
                         </div>

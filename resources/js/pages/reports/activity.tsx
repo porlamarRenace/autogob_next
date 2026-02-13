@@ -99,12 +99,16 @@ export default function ActivityReport({ stats, cases, filters, is_manager }: Pr
 
             <div className="bg-slate-50/50 min-h-screen">
                 <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold">
-                                {is_manager ? 'Reporte de Actividad' : 'Mi Cierre de Caja'}
-                            </h1>
-                            <p className="text-muted-foreground">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        {/* Contenedor de Texto */}
+                        <div className="space-y-1 text-center md:text-left">
+                            <div className="flex items-center gap-3">
+                                <TrendingUp className="h-8 w-8 text-green-600" />
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    {is_manager ? 'Reporte de Actividad' : 'Mi Cierre de Caja'}
+                                </h1>
+                            </div>
+                            <p className="text-muted-foreground ml-11">
                                 {is_manager
                                     ? 'Estadísticas de casos creados en el sistema'
                                     : 'Resumen de tus casos creados'}

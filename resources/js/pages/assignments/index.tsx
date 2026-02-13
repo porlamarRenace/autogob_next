@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { FileDown, CheckCircle, XCircle, Eye, Filter, TrendingUp, FileText, Package, CheckSquare, Gift } from 'lucide-react';
+import { FileDown, CheckCircle, XCircle, Eye, Filter, TrendingUp, FileText, Package, CheckSquare, Gift, ClipboardCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useState } from 'react';
@@ -235,16 +235,24 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
             <div className="bg-slate-50/50 min-h-screen">
                 <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                     {/* Header */}
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold">Mis Asignaciones</h1>
-                            <p className="text-muted-foreground">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        {/* Contenedor de Texto */}
+                        <div className="space-y-1 text-center md:text-left">
+                            <div className="flex items-center gap-3">
+                                <ClipboardCheck className="h-8 w-8 text-brown-600" />
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    Mis Asignaciones
+                                </h1>
+                            </div>
+                            <p className="text-sm md:text-base text-muted-foreground ml-11">
                                 Gestiona los casos e items asignados a ti
                             </p>
                         </div>
+
+                        {/* Botón Responsivo */}
                         <Button
                             onClick={downloadPDF}
-                            className="bg-[#ED2224] hover:bg-[#D11B1D] text-white font-medium shadow-sm transition-all active:scale-95"
+                            className="bg-[#ED2224] hover:bg-[#D11B1D] text-white font-medium shadow-sm transition-all active:scale-95 w-full md:w-auto justify-center"
                         >
                             <FileDown className="h-4 w-4 mr-2" />
                             Descargar PDF

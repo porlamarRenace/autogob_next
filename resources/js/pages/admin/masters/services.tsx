@@ -105,7 +105,7 @@ export default function ServicesManager({ services, institutions, filters }: Pro
                     <div className="flex gap-2 w-full sm:w-auto">
                         <div className="relative w-full sm:w-64">
                             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                            <Input placeholder="Buscar servicio..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+                            <Input placeholder="Buscar servicio..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]" />
                         </div>
                         <Button onClick={() => openModal()} className="bg-purple-600 hover:bg-purple-700">
                             <Plus className="mr-2 h-4 w-4" /> Nuevo
@@ -162,7 +162,7 @@ export default function ServicesManager({ services, institutions, filters }: Pro
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <Label>Nombre</Label>
-                                <Input value={data.name} onChange={e => setData('name', e.target.value)} required />
+                                <Input value={data.name} onChange={e => setData('name', e.target.value)} required className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]" />
                             </div>
                             <div>
                                 <Label>Institución</Label>
@@ -181,7 +181,7 @@ export default function ServicesManager({ services, institutions, filters }: Pro
                                 <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                                     {data.specialties.map((spec, idx) => (
                                         <div key={idx} className="flex gap-2">
-                                            <Input value={spec.nombre} onChange={e => updateSpecialtyName(idx, e.target.value)} className="h-8 bg-white border border-slate-200 dark:border-white" placeholder="Ej: Pediátrica" />
+                                            <Input value={spec.nombre} onChange={e => updateSpecialtyName(idx, e.target.value)} className="h-8 bg-white border border-slate-200 dark:border-white focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]" placeholder="Ej: Pediátrica" />
                                             <Button type="button" size="icon" variant="ghost" onClick={() => removeSpecialty(idx)} className="h-8 w-8 text-red-500"><X className="h-4 w-4" /></Button>
                                         </div>
                                     ))}

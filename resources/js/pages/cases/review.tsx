@@ -182,31 +182,41 @@ export default function Review({ socialCase, specialists, can }: Props) {
         <AppLayout breadcrumbs={[{ title: 'Casos', href: '/cases' }, { title: `Gestión #${socialCase.case_number}`, href: '#' }]}>
             <Head title={`Gestión ${socialCase.case_number}`} />
 
-            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
 
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <ShieldAlert className="text-blue-600" /> Centro de Control
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    {/* Contenedor de Texto: Se alinea al centro en móvil, a la izquierda en desktop */}
+                    <div className="text-center md:text-left">
+                        <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center md:justify-start gap-2">
+                            <ShieldAlert className="text-blue-600 shrink-0" /> 
+                            <span>Centro de Control</span>
                         </h2>
-                        <div className="flex items-center gap-2 text-sm text-slate-500 mt-1">
+                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-sm text-slate-500 mt-2">
                             <span>Folio: {socialCase.case_number}</span>
-                            <span className="text-slate-300">|</span>
-                            <span>Estado Actual: <Badge variant="outline">{socialCase.status.toUpperCase().replace('_', ' ')}</Badge></span>
+                            <span className="hidden sm:inline text-slate-300">|</span>
+                            <span className="flex items-center gap-1">
+                                Estado: <Badge variant="outline" className="whitespace-nowrap">{socialCase.status.toUpperCase().replace('_', ' ')}</Badge>
+                            </span>
                         </div>
                     </div>
-                    <div className="flex gap-2">
+
+                    {/* Contenedor de Botones: Stack vertical en móvil, horizontal en desktop */}
+                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                         <Button
                             variant="outline"
                             asChild
-                            className="bg-[#ED2224] hover:bg-[#D11B1D] text-white hover:text-white border-none font-medium shadow-sm transition-all active:scale-95"
+                            className="bg-[#ED2224] hover:bg-[#D11B1D] text-white hover:text-white border-none font-medium shadow-sm transition-all active:scale-95 w-full sm:w-auto justify-center"
                         >
-                            <a href={route('reports.case.pdf', socialCase.id)} target="_blank" rel="noopener noreferrer">
+                            <a href={route('reports.case.pdf', socialCase.id)} target="_blank" rel="noopener noreferrer" className="flex items-center">
                                 <Download className="mr-2 h-4 w-4" /> Descargar PDF
                             </a>
                         </Button>
-                        <Button variant="outline" onClick={() => window.history.back()}>
+                        <Button 
+                            variant="outline" 
+                            onClick={() => window.history.back()}
+                            className="w-full sm:w-auto justify-center"
+                        >
                             <ArrowLeft className="mr-2 h-4 w-4" /> Volver a la bandeja
                         </Button>
                     </div>

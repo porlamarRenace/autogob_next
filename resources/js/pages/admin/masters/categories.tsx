@@ -67,11 +67,18 @@ export default function CategoriesManager({ categories, parents }: any) {
             <Head title="Categorías" />
             <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0 w-full">
 
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold flex items-center gap-2">
-                        <Layers className="text-orange-600" /> Categorías
-                    </h2>
-                    <Button onClick={() => openModal()} className="bg-orange-600 hover:bg-orange-700">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div className="text-center md:text-left">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center md:justify-start gap-2">
+                            <Layers className="text-orange-600 shrink-0" /> 
+                            <span>Categorías</span>
+                        </h2>
+                    </div>
+
+                    <Button 
+                        onClick={() => openModal()} 
+                        className="bg-orange-600 hover:bg-orange-700 w-full md:w-auto justify-center shadow-md transition-all active:scale-95"
+                    >
                         <Plus className="mr-2 h-4 w-4" /> Nueva Categoría
                     </Button>
                 </div>
@@ -122,7 +129,14 @@ export default function CategoriesManager({ categories, parents }: any) {
                     <DialogContent>
                         <DialogHeader><DialogTitle>{editingItem ? 'Editar Categoría' : 'Nueva Categoría'}</DialogTitle></DialogHeader>
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div><Label>Nombre</Label><Input value={data.name} onChange={e => setData('name', e.target.value)} required /></div>
+                            <div><Label>Nombre</Label><Input 
+                                        id="name"
+                                        value={data.name} 
+                                        onChange={e => setData('name', e.target.value)} 
+                                        required 
+                                        className="focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
+                                    />
+                                </div>
                             <div>
                                 <Label>Categoría Padre (Opcional)</Label>
                                 <Select value={data.parent_id} onValueChange={v => setData('parent_id', v)}>
