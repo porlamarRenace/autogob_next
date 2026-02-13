@@ -362,8 +362,8 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
                     {/* Tabs de contenido */}
                     <Tabs defaultValue="cases" className="space-y-4">
                         <TabsList>
-                            <TabsTrigger value="cases">Casos Completos ({assignedCases.total})</TabsTrigger>
-                            <TabsTrigger value="items">Items Individuales ({assignedItems.total})</TabsTrigger>
+                            <TabsTrigger value="cases">Casos Completos ({assignedCases?.total ?? 0})</TabsTrigger>
+                            <TabsTrigger value="items">Items Individuales ({assignedItems?.total ?? 0})</TabsTrigger>
                         </TabsList>
 
                         {/* Tab de Casos */}
@@ -374,7 +374,7 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
                                     <CardDescription>Casos completos asignados para tu revisión</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    {assignedCases.data.length === 0 ? (
+                                    {!assignedCases?.data?.length ? (
                                         <p className="text-center text-muted-foreground py-8">
                                             No tienes casos asignados
                                         </p>
@@ -396,9 +396,9 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
                                                     <TableRow key={caso.id}>
                                                         <TableCell className="font-medium">{caso.case_number}</TableCell>
                                                         <TableCell>
-                                                            {caso.beneficiary.first_name} {caso.beneficiary.last_name}
+                                                            {caso.beneficiary?.first_name ?? ''} {caso.beneficiary?.last_name ?? ''}
                                                         </TableCell>
-                                                        <TableCell>{caso.category.name}</TableCell>
+                                                        <TableCell>{caso.category?.name ?? 'Sin categoría'}</TableCell>
                                                         <TableCell>{caso.items.length} items</TableCell>
                                                         <TableCell>
                                                             {format(new Date(caso.created_at), "d 'de' MMM, yyyy", { locale: es })}
@@ -447,7 +447,7 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
                                     <CardDescription>Items específicos asignados para tu aprobación</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    {assignedItems.data.length === 0 ? (
+                                    {!assignedItems?.data?.length ? (
                                         <p className="text-center text-muted-foreground py-8">
                                             No tienes items asignados
                                         </p>
@@ -471,10 +471,10 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
                                                             {item.social_case?.case_number}
                                                         </TableCell>
                                                         <TableCell>
-                                                            {item.social_case?.beneficiary.first_name}{' '}
-                                                            {item.social_case?.beneficiary.last_name}
+                                                            {item.social_case?.beneficiary?.first_name ?? ''}{' '}
+                                                            {item.social_case?.beneficiary?.last_name ?? ''}
                                                         </TableCell>
-                                                        <TableCell>{item.itemable.name}</TableCell>
+                                                        <TableCell>{item.itemable?.name ?? 'Item eliminado'}</TableCell>
                                                         <TableCell>{item.quantity}</TableCell>
                                                         <TableCell>
                                                             {format(new Date(item.created_at), "d 'de' MMM, yyyy", { locale: es })}
