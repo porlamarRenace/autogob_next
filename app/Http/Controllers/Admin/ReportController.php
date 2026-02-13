@@ -9,6 +9,7 @@ use App\Models\CaseItem;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 use Inertia\Inertia;
 
@@ -149,6 +150,221 @@ class ReportController extends Controller
 
         return $pdf->stream("Ayudas-Aprobadas-{$request->start_date}-{$request->end_date}.pdf");
     }
+
+    /**
+     * Excel de ayudas sociales por período (estilizado con PhpSpreadsheet)
+     */
+    public function aidsExcel(Request $request)
+    {
+        if (!auth()->user()->can('export aids excel')) {
+            abort(403, 'No tiene permiso para exportar este reporte.');
+        }
+
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = Carbon::parse($request->start_date)->startOfDay();
+        $endDate = Carbon::parse($request->end_date)->endOfDay();
+
+        $rows = $this->buildAidsExcelData($startDate, $endDate);
+        $filename = "Reporte-Ayudas-{$request->start_date}-a-{$request->end_date}.xlsx";
+
+        return $this->generateStyledExcel($rows, $filename, $startDate, $endDate);
+    }
+
+    /**
+     * TEMP DEBUG: Excel sin auth para debuggear con Bruno
+     */
+    public function aidsExcelDebug(Request $request)
+    {
+        $startDate = Carbon::parse($request->get('start_date', '2024-01-01'))->startOfDay();
+        $endDate = Carbon::parse($request->get('end_date', '2027-12-31'))->endOfDay();
+
+        if ($request->get('debug')) {
+            dd([
+                'total_in_db' => SocialCase::count(),
+                'min_date' => SocialCase::min('created_at'),
+                'max_date' => SocialCase::max('created_at'),
+                'cases_in_range' => SocialCase::whereBetween('created_at', [$startDate, $endDate])->count(),
+            ]);
+        }
+
+        $rows = $this->buildAidsExcelData($startDate, $endDate);
+        return $this->generateStyledExcel($rows, 'debug-ayudas.xlsx', $startDate, $endDate);
+    }
+
+    /**
+     * Construir datos para el Excel de ayudas
+     */
+    private function buildAidsExcelData(Carbon $startDate, Carbon $endDate): array
+    {
+        $cases = SocialCase::with([
+                'applicant:id,first_name,last_name,nationality,identification_value,phone',
+                'beneficiary:id,first_name,last_name,birth_date,street_id',
+                'beneficiary.street:id,name,community_id',
+                'beneficiary.street.community:id,name',
+                'category:id,name',
+                'items.itemable',
+            ])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $rowNumber = 0;
+        $rows = [];
+
+        foreach ($cases as $case) {
+            $rowNumber++;
+            $applicant = $case->applicant;
+            $beneficiary = $case->beneficiary;
+
+            $ageCategory = 'N/A';
+            if ($beneficiary && $beneficiary->birth_date) {
+                $age = $beneficiary->birth_date->diffInYears(Carbon::now());
+                $ageCategory = $age >= 18 ? 'Adulto' : 'Niño';
+            }
+
+            $address = '';
+            if ($beneficiary && $beneficiary->street) {
+                $address = $beneficiary->street->name;
+                if ($beneficiary->street->community) {
+                    $address .= ', ' . $beneficiary->street->community->name;
+                }
+            }
+
+            $sector = ($beneficiary && $beneficiary->street && $beneficiary->street->community)
+                ? $beneficiary->street->community->name
+                : '';
+
+            $itemDescriptions = $case->items->map(function ($item) {
+                return $item->itemable ? $item->itemable->name : 'Item sin nombre';
+            })->implode(' - ');
+
+            $rows[] = [
+                $rowNumber,
+                $case->created_at->format('d/m/Y'),
+                $applicant ? trim("{$applicant->first_name} {$applicant->last_name}") : 'N/A',
+                $applicant ? "{$applicant->nationality}-{$applicant->identification_value}" : 'N/A',
+                $ageCategory,
+                $address,
+                $sector,
+                $case->category ? $case->category->name : 'N/A',
+                $itemDescriptions ?: 'Sin items',
+                $applicant ? ($applicant->phone ?: 'N/A') : 'N/A',
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Generar Excel estilizado profesionalmente con PhpSpreadsheet
+     */
+    private function generateStyledExcel(array $rows, string $filename, Carbon $startDate, Carbon $endDate)
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Reporte de Ayudas');
+
+        $headers = [
+            'N', 'Fecha', 'Nombre y Apellido Solicitante', 'Numero de Cedula',
+            'Categoria (Adulto/Nino)', 'Direccion', 'Sector',
+            'Tipos de Ayudas (Categoria)', 'Descripcion', 'Telefono'
+        ];
+
+        $lastCol = 'J';
+
+        // ── Fila 1: Título ──
+        $sheet->mergeCells("A1:{$lastCol}1");
+        $sheet->setCellValue('A1', 'REPORTE DE AYUDAS SOCIALES');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '1B3A5C']],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER, 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER],
+        ]);
+        $sheet->getRowDimension(1)->setRowHeight(30);
+
+        // ── Fila 2: Período ──
+        $sheet->mergeCells("A2:{$lastCol}2");
+        $sheet->setCellValue('A2', "Periodo: {$startDate->format('d/m/Y')} - {$endDate->format('d/m/Y')}");
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => ['italic' => true, 'size' => 10, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '2C5F8A']],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+        ]);
+        $sheet->getRowDimension(2)->setRowHeight(22);
+
+        // ── Fila 3: Encabezados ──
+        $columns = range('A', $lastCol);
+        foreach ($columns as $i => $col) {
+            $sheet->setCellValue("{$col}3", $headers[$i]);
+        }
+        $sheet->getStyle("A3:{$lastCol}3")->applyFromArray([
+            'font' => ['bold' => true, 'size' => 10, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '2E75B6']],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER, 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER, 'wrapText' => true],
+            'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => '000000']]],
+        ]);
+        $sheet->getRowDimension(3)->setRowHeight(28);
+
+        // ── Datos ──
+        $dataStart = 4;
+        if (empty($rows)) {
+            $sheet->mergeCells("A{$dataStart}:{$lastCol}{$dataStart}");
+            $sheet->setCellValue("A{$dataStart}", 'No se encontraron registros en el periodo seleccionado.');
+            $sheet->getStyle("A{$dataStart}")->applyFromArray([
+                'font' => ['italic' => true, 'size' => 11, 'color' => ['rgb' => '888888']],
+                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+            ]);
+        } else {
+            foreach ($rows as $idx => $row) {
+                $r = $dataStart + $idx;
+                foreach ($columns as $i => $col) {
+                    $val = $row[$i] ?? '';
+                    if (is_string($val)) {
+                        $val = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $val);
+                    }
+                    $sheet->setCellValue("{$col}{$r}", $val);
+                }
+
+                $bgColor = ($idx % 2 === 0) ? 'D6E4F0' : 'FFFFFF';
+                $sheet->getStyle("A{$r}:{$lastCol}{$r}")->applyFromArray([
+                    'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => $bgColor]],
+                    'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => '000000']]],
+                    'alignment' => ['vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER],
+                    'font' => ['size' => 10],
+                ]);
+            }
+
+            // Centrar columnas cortas
+            $lastRow = $dataStart + count($rows) - 1;
+            foreach (['A', 'B', 'D', 'E', 'J'] as $cc) {
+                $sheet->getStyle("{$cc}{$dataStart}:{$cc}{$lastRow}")->getAlignment()
+                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            }
+        }
+
+        // ── Anchos de columna ──
+        $widths = ['A' => 5, 'B' => 12, 'C' => 30, 'D' => 18, 'E' => 18, 'F' => 30, 'G' => 20, 'H' => 22, 'I' => 40, 'J' => 16];
+        foreach ($widths as $col => $w) {
+            $sheet->getColumnDimension($col)->setWidth($w);
+        }
+
+        // Congelar encabezados
+        $sheet->freezePane("A{$dataStart}");
+
+        // ── Descargar ──
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $tempFile = tempnam(sys_get_temp_dir(), 'excel_');
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
+    }
+
 
     /**
      * Lista de ciudadanos para expedientes

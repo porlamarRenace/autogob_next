@@ -17,6 +17,9 @@ Route::get('/', function () {
     return redirect('/dashboard');
 })->name('home');
 
+// TEMP DEBUG: Quitar después de debuggear
+Route::get('/api/debug/aids-excel', [\App\Http\Controllers\Admin\ReportController::class, 'aidsExcelDebug'])->name('debug.aids-excel');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         $user = Auth::user();
@@ -139,6 +142,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/citizen/{citizen}/expedient-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'citizenExpedient'])->name('reports.citizen.pdf');
         Route::get('reports/approved-aids', [\App\Http\Controllers\Admin\ReportController::class, 'approvedAids'])->name('reports.approved-aids');
+        Route::get('reports/aids-excel', [\App\Http\Controllers\Admin\ReportController::class, 'aidsExcel'])->name('reports.aids-excel');
         
         // Expedientes de Ciudadanos
         Route::get('reports/citizens', [\App\Http\Controllers\Admin\ReportController::class, 'citizensList'])->name('reports.citizens')->middleware('can:view citizen expedients');

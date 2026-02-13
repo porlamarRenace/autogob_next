@@ -38,6 +38,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view reports',
             'view citizen expedients',  // Ver expedientes de ciudadanos
             'view activity reports',    // Ver reportes de actividad/cierre
+            'export aids excel',        // Exportar reporte de ayudas en Excel
             
             // Administración
             'manage users',    // Crear otros usuarios
@@ -78,7 +79,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage stock',
             'view reports',
             'view citizen expedients',
-            'view activity reports'
+            'view activity reports',
+            'export aids excel'
         ]);
 
         // 5. Crear Usuario Super Admin por defecto
