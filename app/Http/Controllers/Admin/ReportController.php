@@ -221,9 +221,11 @@ class ReportController extends Controller
             $beneficiary = $case->beneficiary;
 
             $ageCategory = 'N/A';
+            $ageYears = 'N/A';
             if ($beneficiary && $beneficiary->birth_date) {
                 $age = $beneficiary->birth_date->diffInYears(Carbon::now());
                 $ageCategory = $age >= 18 ? 'Adulto' : 'Niño';
+                $ageYears = $age;
             }
 
             $address = '';
@@ -248,6 +250,7 @@ class ReportController extends Controller
                 $applicant ? trim("{$applicant->first_name} {$applicant->last_name}") : 'N/A',
                 $applicant ? "{$applicant->nationality}-{$applicant->identification_value}" : 'N/A',
                 $ageCategory,
+                $ageYears,
                 $address,
                 $sector,
                 $case->category ? $case->category->name : 'N/A',
@@ -270,11 +273,11 @@ class ReportController extends Controller
 
         $headers = [
             'N', 'Fecha', 'Nombre y Apellido Solicitante', 'Numero de Cedula',
-            'Categoria (Adulto/Nino)', 'Direccion', 'Sector',
+            'Categoria (Adulto/Nino)', 'Edad', 'Direccion', 'Sector',
             'Tipos de Ayudas (Categoria)', 'Descripcion', 'Telefono'
         ];
 
-        $lastCol = 'J';
+        $lastCol = 'K';
 
         // ── Fila 1: Título ──
         $sheet->mergeCells("A1:{$lastCol}1");
@@ -340,14 +343,14 @@ class ReportController extends Controller
 
             // Centrar columnas cortas
             $lastRow = $dataStart + count($rows) - 1;
-            foreach (['A', 'B', 'D', 'E', 'J'] as $cc) {
+            foreach (['A', 'B', 'D', 'E', 'F', 'K'] as $cc) {
                 $sheet->getStyle("{$cc}{$dataStart}:{$cc}{$lastRow}")->getAlignment()
                     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
             }
         }
 
         // ── Anchos de columna ──
-        $widths = ['A' => 5, 'B' => 12, 'C' => 30, 'D' => 18, 'E' => 18, 'F' => 30, 'G' => 20, 'H' => 22, 'I' => 40, 'J' => 16];
+        $widths = ['A' => 5, 'B' => 12, 'C' => 30, 'D' => 18, 'E' => 18, 'F' => 7, 'G' => 30, 'H' => 20, 'I' => 22, 'J' => 40, 'K' => 16];
         foreach ($widths as $col => $w) {
             $sheet->getColumnDimension($col)->setWidth($w);
         }
