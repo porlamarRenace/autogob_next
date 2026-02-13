@@ -225,7 +225,7 @@ class ReportController extends Controller
             if ($beneficiary && $beneficiary->birth_date) {
                 $age = $beneficiary->birth_date->diffInYears(Carbon::now());
                 $ageCategory = $age >= 18 ? 'Adulto' : 'Niño';
-                $ageYears = $age;
+                $ageYears = (int) $age;
             }
 
             $address = '';
