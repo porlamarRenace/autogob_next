@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { FileDown, CheckCircle, XCircle, Eye, Filter, TrendingUp, FileText, Package, CheckSquare, Gift } from 'lucide-react';
+import { FileDown, CheckCircle, XCircle, Eye, Filter, TrendingUp, FileText, Package, CheckSquare, Gift, ClipboardCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useState } from 'react';
@@ -238,10 +238,13 @@ export default function MyAssignments({ assignedCases, assignedItems, stats, fil
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         {/* Contenedor de Texto */}
                         <div className="space-y-1 text-center md:text-left">
-                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                Mis Asignaciones
-                            </h1>
-                            <p className="text-sm md:text-base text-muted-foreground">
+                            <div className="flex items-center gap-3">
+                                <ClipboardCheck className="h-8 w-8 text-brown-600" />
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    Mis Asignaciones
+                                </h1>
+                            </div>
+                            <p className="text-sm md:text-base text-muted-foreground ml-11">
                                 Gestiona los casos e items asignados a ti
                             </p>
                         </div>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FileDown, Eye, Search } from 'lucide-react';
+import { FileDown, Eye, Search, UserCircle } from 'lucide-react';
 
 interface Citizen {
     id: number;
@@ -60,9 +60,14 @@ export default function CitizensList({ citizens, search: initialSearch }: Props)
 
             <div className="bg-slate-50/50 min-h-screen">
                 <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                    <div>
-                        <h1 className="text-3xl font-bold">Expedientes de Ciudadanos</h1>
-                        <p className="text-muted-foreground">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                            <UserCircle className="h-8 w-8 text-blue-600" />
+                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                Expedientes de Ciudadanos
+                            </h1>
+                        </div>
+                            <p className="text-muted-foreground ml-11">
                             Listado de todos los ciudadanos registrados en el sistema
                         </p>
                     </div>
