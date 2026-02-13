@@ -83,10 +83,10 @@ export default function CitizensList({ citizens, search: initialSearch }: Props)
                                         placeholder="Buscar por nombre o cédula..."
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        className="pl-10"
+                                        className="pl-10 focus-visible:ring-[#005BBB]/30 focus-visible:border-[#005BBB] [&:-webkit-autofill]:shadow-[0_0_0_1000px_white_inset]"
                                     />
                                 </div>
-                                <Button type="submit">Buscar</Button>
+                                <Button type="submit" className="bg-[#005BBB] hover:bg-[#005BBB]/90 text-white border-none font-medium shadow-sm transition-all active:scale-95">Buscar</Button>
                                 {search && (
                                     <Button
                                         type="button"
